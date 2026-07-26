@@ -89,7 +89,7 @@ export const InputSourcesWindow: React.FC<InputSourcesWindowProps> = ({
           }
         }
       } catch (err: any) {
-        setErrorMsg('Webcam permission denied or camera not found: ' + (err.message || 'Error'));
+        setErrorMsg('Webcam permission denied or camera unavailable: ' + (err.message || 'Error'));
       }
     } else if (activeTab === 'ipcam') {
       if (!ipUrl) {
@@ -188,44 +188,44 @@ export const InputSourcesWindow: React.FC<InputSourcesWindowProps> = ({
 
   return (
     <WinWindow title="RPD Input Source Manager" icon={<Video size={14} />}>
-      {/* Input Source Tabs (Zero Duplication) */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '2px', marginBottom: '8px' }}>
+      {/* Input Source Selector Tabs */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '4px', marginBottom: '10px' }}>
         <button
           className={`win-btn ${activeTab === 'webcam' ? 'win-btn-active' : ''}`}
           onClick={() => handleTabChange('webcam')}
-          style={{ fontSize: '10px', padding: '3px 2px', justifyContent: 'center' }}
+          style={{ fontSize: '11px', padding: '4px 6px', justifyContent: 'center' }}
         >
-          <Camera size={11} /> Webcam
+          <Camera size={12} /> Webcam
         </button>
         <button
           className={`win-btn ${activeTab === 'ipcam' ? 'win-btn-active' : ''}`}
           onClick={() => handleTabChange('ipcam')}
-          style={{ fontSize: '10px', padding: '3px 2px', justifyContent: 'center' }}
+          style={{ fontSize: '11px', padding: '4px 6px', justifyContent: 'center' }}
         >
-          <Globe size={11} /> IP Cam
+          <Globe size={12} /> IP Cam
         </button>
         <button
           className={`win-btn ${activeTab === 'upload' ? 'win-btn-active' : ''}`}
           onClick={() => handleTabChange('upload')}
-          style={{ fontSize: '10px', padding: '3px 2px', justifyContent: 'center' }}
+          style={{ fontSize: '11px', padding: '4px 6px', justifyContent: 'center' }}
         >
-          <Folder size={11} /> Upload
+          <Folder size={12} /> Upload
         </button>
         <button
           className={`win-btn ${activeTab === 'samples' ? 'win-btn-active' : ''}`}
           onClick={() => handleTabChange('samples')}
-          style={{ fontSize: '10px', padding: '3px 2px', justifyContent: 'center' }}
+          style={{ fontSize: '11px', padding: '4px 6px', justifyContent: 'center' }}
         >
-          <Layers size={11} /> Samples
+          <Layers size={12} /> Samples
         </button>
       </div>
 
-      {/* Tab Content 1 & 2: Live Video Stream Controls */}
+      {/* Tab 1 & 2: Live Video Stream Controls */}
       {(activeTab === 'webcam' || activeTab === 'ipcam') && (
-        <div>
+        <div style={{ padding: '4px 0' }}>
           {activeTab === 'ipcam' && (
-            <div style={{ marginBottom: '8px' }}>
-              <label style={{ fontSize: '10px', display: 'block', marginBottom: '2px', fontWeight: 'bold' }}>
+            <div style={{ marginBottom: '10px' }}>
+              <label style={{ fontSize: '11px', display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
                 IP Camera / RTSP Feed URL:
               </label>
               <input
@@ -235,25 +235,25 @@ export const InputSourcesWindow: React.FC<InputSourcesWindowProps> = ({
                 onChange={(e) => setIpUrl(e.target.value)}
                 placeholder="http://192.168.1.100:8080/video or rtsp://..."
                 disabled={isStreaming}
-                style={{ width: '100%', padding: '4px 6px', fontSize: '11px' }}
+                style={{ width: '100%', padding: '6px 8px', fontSize: '12px' }}
               />
             </div>
           )}
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px' }}>
             <div>
               {isStreaming ? (
-                <span style={{ color: '#008000', fontWeight: 'bold', fontSize: '10px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <span style={{ color: '#008000', fontWeight: 'bold', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <Radio size={12} /> STREAM ACTIVE ({fps} FPS)
                 </span>
               ) : (
-                <span style={{ color: '#808080', fontSize: '10px' }}>Stream Offline</span>
+                <span style={{ color: '#808080', fontSize: '11px' }}>Stream Offline</span>
               )}
             </div>
 
             {!isStreaming ? (
               <button className="win-btn" onClick={startStream}>
-                <Camera size={12} /> Start Stream
+                <Camera size={13} /> Start Stream
               </button>
             ) : (
               <button className="win-btn win-btn-danger" onClick={stopWebcam}>
@@ -264,7 +264,7 @@ export const InputSourcesWindow: React.FC<InputSourcesWindowProps> = ({
         </div>
       )}
 
-      {/* Tab Content 3: File Upload Dropzone */}
+      {/* Tab 3: File Upload Dropzone */}
       {activeTab === 'upload' && (
         <div
           className="win-inset"
@@ -272,13 +272,13 @@ export const InputSourcesWindow: React.FC<InputSourcesWindowProps> = ({
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
           style={{
-            padding: '16px',
+            padding: '24px 16px',
             textAlign: 'center',
             cursor: isLoading ? 'not-allowed' : 'pointer',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: '6px',
+            gap: '8px',
             background: '#ffffff'
           }}
         >
@@ -290,16 +290,17 @@ export const InputSourcesWindow: React.FC<InputSourcesWindowProps> = ({
             style={{ display: 'none' }}
             disabled={isLoading}
           />
-          <UploadCloud size={20} color="#000080" />
-          <p style={{ fontWeight: 'bold', fontSize: '11px', margin: 0 }}>
+          <UploadCloud size={28} color="#000080" />
+          <p style={{ fontWeight: 'bold', fontSize: '12px', margin: 0 }}>
             Drag & Drop image file or <span style={{ color: '#000080', textDecoration: 'underline' }}>Browse...</span>
           </p>
+          <p style={{ fontSize: '10px', color: '#808080', margin: 0 }}>Supports JPEG, PNG, WEBP</p>
         </div>
       )}
 
-      {/* Tab Content 4: Demo Sample Benchmark Gallery */}
+      {/* Tab 4: Demo Sample Benchmark Gallery */}
       {activeTab === 'samples' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '4px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '6px' }}>
           {SAMPLE_IMAGES.map((sample) => {
             const url = `/samples/${sample.name}`;
             const isSelected = selectedSample === sample.name;
@@ -310,7 +311,7 @@ export const InputSourcesWindow: React.FC<InputSourcesWindowProps> = ({
                 className={isSelected ? 'win-inset' : 'win-outdent'}
                 style={{
                   cursor: 'pointer',
-                  padding: '2px',
+                  padding: '3px',
                   textAlign: 'center',
                   background: isSelected ? '#ffffff' : '#c0c0c0'
                 }}
@@ -318,9 +319,9 @@ export const InputSourcesWindow: React.FC<InputSourcesWindowProps> = ({
                 <img
                   src={url}
                   alt={sample.label}
-                  style={{ width: '100%', height: '36px', objectFit: 'cover', display: 'block' }}
+                  style={{ width: '100%', height: '52px', objectFit: 'cover', display: 'block' }}
                 />
-                <div style={{ fontSize: '8px', fontWeight: 'bold', padding: '2px 0' }}>
+                <div style={{ fontSize: '9px', fontWeight: 'bold', padding: '3px 0' }}>
                   {sample.label}
                 </div>
               </div>
@@ -330,7 +331,7 @@ export const InputSourcesWindow: React.FC<InputSourcesWindowProps> = ({
       )}
 
       {errorMsg && (
-        <p style={{ color: '#800000', fontSize: '10px', marginTop: '6px', fontWeight: 'bold' }}>{errorMsg}</p>
+        <p style={{ color: '#800000', fontSize: '11px', marginTop: '8px', fontWeight: 'bold' }}>{errorMsg}</p>
       )}
 
       <video ref={videoRef} style={{ display: 'none' }} muted playsInline />

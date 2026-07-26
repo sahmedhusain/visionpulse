@@ -23,12 +23,12 @@ body {
   font-family: 'Tahoma', 'MS Sans Serif', 'Space Mono', sans-serif;
   background-color: var(--win-teal);
   background-image: 
-    radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 0);
+    radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 0);
   background-size: 8px 8px;
   color: var(--text-main);
   min-height: 100vh;
   overflow-x: hidden;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 /* Classic Win98 Bevel Outdent (Window / Raised Box) */
@@ -53,12 +53,12 @@ body {
 
 /* Dark Screen Inset (For Video Stream / Canvas) */
 .win-screen-inset {
-  background: #050a0a;
+  background: #04070a;
   border-top: 2px solid var(--win-bg-dark);
   border-left: 2px solid var(--win-bg-dark);
   border-right: 2px solid var(--win-white);
   border-bottom: 2px solid var(--win-white);
-  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.8);
 }
 
 /* Win98 Window Frame */
@@ -68,8 +68,8 @@ body {
   border-left: 2px solid var(--win-white);
   border-right: 2px solid var(--win-black);
   border-bottom: 2px solid var(--win-black);
-  box-shadow: inset 1px 1px 0 var(--win-bg-light), inset -1px -1px 0 var(--win-bg-dark), 4px 4px 10px rgba(0, 0, 0, 0.3);
-  padding: 3px;
+  box-shadow: inset 1px 1px 0 var(--win-bg-light), inset -1px -1px 0 var(--win-bg-dark), 4px 4px 12px rgba(0, 0, 0, 0.35);
+  padding: 4px;
   display: flex;
   flex-direction: column;
 }
@@ -78,13 +78,14 @@ body {
 .win-title-bar {
   background: var(--win-title-blue);
   color: var(--win-white);
-  padding: 3px 6px;
+  padding: 4px 8px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   font-weight: bold;
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.5px;
+  height: 24px;
 }
 
 .win-title-bar-inactive {
@@ -93,16 +94,16 @@ body {
 
 /* Win98 Window Controls Buttons ([ _ ] [ 🗖 ] [ X ]) */
 .win-btn-control {
-  width: 16px;
-  height: 14px;
+  width: 18px;
+  height: 16px;
   background: var(--win-bg);
   border-top: 1px solid var(--win-white);
   border-left: 1px solid var(--win-white);
   border-right: 1px solid var(--win-black);
   border-bottom: 1px solid var(--win-black);
-  font-size: 9px;
+  font-size: 10px;
   font-weight: bold;
-  line-height: 12px;
+  line-height: 14px;
   text-align: center;
   cursor: pointer;
   color: #000;
@@ -129,16 +130,18 @@ body {
   border-right: 2px solid var(--win-black);
   border-bottom: 2px solid var(--win-black);
   box-shadow: inset 1px 1px 0 var(--win-bg-light), inset -1px -1px 0 var(--win-bg-dark);
-  padding: 4px 12px;
+  padding: 5px 12px;
+  min-height: 26px;
   font-family: inherit;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: bold;
   color: #000;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
 }
 
 .win-btn:hover {
@@ -151,23 +154,28 @@ body {
   border-right: 2px solid var(--win-white);
   border-bottom: 2px solid var(--win-white);
   box-shadow: inset 1px 1px 0 var(--win-bg-dark);
-  padding: 5px 11px 3px 13px;
+  padding: 6px 11px 4px 13px;
 }
 
-/* Win98 Danger Red Push Button */
 .win-btn-danger {
   background: #c0c0c0;
   color: #800000;
 }
 
+/* Win98 Input Field */
+input.win-inset {
+  min-height: 26px;
+  font-size: 12px;
+}
+
 /* Win98 Status Bar */
 .win-status-bar {
-  margin-top: 4px;
-  padding: 3px 6px;
+  margin-top: 6px;
+  padding: 4px 8px;
   background: var(--win-bg);
   border-top: 1px solid var(--win-bg-dark);
   display: flex;
-  gap: 6px;
+  gap: 8px;
 }
 
 .win-status-field {
@@ -176,8 +184,8 @@ body {
   border-left: 1px solid var(--win-bg-dark);
   border-right: 1px solid var(--win-white);
   border-bottom: 1px solid var(--win-white);
-  padding: 2px 6px;
-  font-size: 11px;
+  padding: 3px 8px;
+  font-size: 12px;
 }
 
 /* Custom Win98 Scrollbar */

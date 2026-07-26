@@ -41,13 +41,13 @@ export const DetectionCanvas: React.FC<DetectionCanvasProps> = ({
 
   return (
     <WinWindow
-      title="RPD Monitor Display - Visual Stream"
+      title="RPD Monitor Display - Live Visual Feed"
       icon={<Monitor size={14} />}
       statusBarContent={
-        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', fontSize: '11px', fontWeight: 'bold' }}>
           <span>Detections: {detections.length} Persons</span>
-          <span>Resolution: 800x600</span>
-          <span>Status: {isLoading ? 'Processing...' : 'Active Feed'}</span>
+          <span>Target Resolution: 800x600</span>
+          <span>Mode: {isLoading ? 'Processing...' : 'Active Stream'}</span>
         </div>
       }
     >
@@ -57,30 +57,31 @@ export const DetectionCanvas: React.FC<DetectionCanvasProps> = ({
         style={{
           position: 'relative',
           width: '100%',
-          minHeight: '380px',
+          minHeight: '440px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           background: '#04070a',
-          padding: '4px'
+          padding: '6px'
         }}
       >
-        {/* Fullscreen Button in top-right corner of video monitor */}
+        {/* Fullscreen Button in top-right corner */}
         <button
           className="win-btn"
           onClick={toggleFullscreen}
           style={{
             position: 'absolute',
-            top: '8px',
-            right: '8px',
+            top: '10px',
+            right: '10px',
             zIndex: 30,
             fontSize: '11px',
-            padding: '2px 8px'
+            padding: '3px 10px',
+            height: '26px'
           }}
-          title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen Stream'}
+          title={isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen Video Stream'}
         >
-          {isFullscreen ? <Minimize2 size={12} /> : <Maximize2 size={12} />}
-          <span>{isFullscreen ? 'Restore' : '🗖 Fullscreen Stream'}</span>
+          {isFullscreen ? <Minimize2 size={13} /> : <Maximize2 size={13} />}
+          <span>{isFullscreen ? 'Restore Window' : '🗖 Fullscreen Stream'}</span>
         </button>
 
         {isLoading && (
@@ -94,21 +95,21 @@ export const DetectionCanvas: React.FC<DetectionCanvasProps> = ({
               alignItems: 'center',
               justifyContent: 'center',
               zIndex: 20,
-              gap: '8px'
+              gap: '10px'
             }}
           >
             <div
               style={{
-                width: '32px',
-                height: '32px',
+                width: '36px',
+                height: '36px',
                 border: '3px solid #008080',
                 borderTopColor: '#fff',
                 borderRadius: '50%',
                 animation: 'spin 1s linear infinite'
               }}
             />
-            <p style={{ color: '#00ffff', fontFamily: 'monospace', fontSize: '12px' }}>
-              [RPD AI] Processing Neural Inference...
+            <p style={{ color: '#00ffff', fontFamily: 'monospace', fontSize: '13px', fontWeight: 'bold' }}>
+              [RPD AI] Running Neural Detection Inference...
             </p>
           </div>
         )}
@@ -120,7 +121,7 @@ export const DetectionCanvas: React.FC<DetectionCanvasProps> = ({
               alt="RPD Visual Stream"
               style={{
                 maxWidth: '100%',
-                maxHeight: isFullscreen ? '95vh' : '500px',
+                maxHeight: isFullscreen ? '95vh' : '520px',
                 objectFit: 'contain'
               }}
             />
@@ -128,27 +129,28 @@ export const DetectionCanvas: React.FC<DetectionCanvasProps> = ({
               <div
                 style={{
                   position: 'absolute',
-                  bottom: '10px',
-                  left: '10px',
-                  background: 'rgba(0, 0, 0, 0.8)',
+                  bottom: '12px',
+                  left: '12px',
+                  background: 'rgba(0, 0, 0, 0.85)',
                   border: '1px solid #00ffff',
-                  padding: '4px 8px',
+                  padding: '5px 10px',
                   color: '#00ffff',
-                  fontSize: '11px',
+                  fontSize: '12px',
                   fontFamily: 'monospace',
+                  fontWeight: 'bold',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '4px'
+                  gap: '6px'
                 }}
               >
-                <Sparkles size={12} /> RPD Annotated: {detections.length} Persons Detected
+                <Sparkles size={13} /> RPD Annotated: {detections.length} Persons Tracked
               </div>
             )}
           </div>
         ) : (
-          <div style={{ textAlign: 'center', color: '#808080', padding: '3rem' }}>
-            <p style={{ fontFamily: 'monospace', fontSize: '13px', color: '#00ff00' }}>[RPD MONITOR STANDBY]</p>
-            <p style={{ fontSize: '11px', marginTop: '6px', color: '#a0a0a0' }}>Select a Camera Source, Upload File, or Demo Sample below</p>
+          <div style={{ textAlign: 'center', color: '#808080', padding: '4rem 2rem' }}>
+            <p style={{ fontFamily: 'monospace', fontSize: '15px', color: '#00ff00', fontWeight: 'bold' }}>[RPD MONITOR STANDBY]</p>
+            <p style={{ fontSize: '12px', marginTop: '8px', color: '#b0b0b0' }}>Select an Input Source (Webcam, IP Camera, File Upload, or Demo Samples) on the right</p>
           </div>
         )}
       </div>
