@@ -1,128 +1,204 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=VT323&display=swap');
 
 :root {
-  --bg-dark: #0b0f19;
-  --bg-card: rgba(18, 24, 38, 0.7);
-  --bg-card-hover: rgba(28, 36, 56, 0.85);
-  --border-glow: rgba(56, 189, 248, 0.2);
-  --accent-cyan: #38bdf8;
-  --accent-purple: #818cf8;
-  --accent-emerald: #34d399;
-  --accent-rose: #fb7185;
-  --text-main: #f8fafc;
-  --text-muted: #94a3b8;
-  --radius-lg: 16px;
-  --radius-md: 10px;
+  --win-bg: #c0c0c0;
+  --win-bg-light: #dfdfdf;
+  --win-bg-dark: #808080;
+  --win-title-blue: linear-gradient(90deg, #000080 0%, #1084d0 100%);
+  --win-title-inactive: linear-gradient(90deg, #808080 0%, #b5b5b5 100%);
+  --win-teal: #008080;
+  --win-black: #000000;
+  --win-white: #ffffff;
+  --text-main: #000000;
 }
 
 * {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  user-select: none;
 }
 
 body {
-  font-family: 'Outfit', sans-serif;
-  background-color: var(--bg-dark);
+  font-family: 'Tahoma', 'MS Sans Serif', 'Space Mono', sans-serif;
+  background-color: var(--win-teal);
   background-image: 
-    radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.08) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(129, 140, 248, 0.08) 0px, transparent 50%);
+    radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 0);
+  background-size: 8px 8px;
   color: var(--text-main);
   min-height: 100vh;
   overflow-x: hidden;
+  font-size: 12px;
 }
 
-h1, h2, h3, .font-heading {
-  font-family: 'Space Grotesk', sans-serif;
+/* Classic Win98 Bevel Outdent (Window / Raised Box) */
+.win-outdent {
+  background: var(--win-bg);
+  border-top: 2px solid var(--win-white);
+  border-left: 2px solid var(--win-white);
+  border-right: 2px solid var(--win-black);
+  border-bottom: 2px solid var(--win-black);
+  box-shadow: inset 1px 1px 0 var(--win-bg-light), inset -1px -1px 0 var(--win-bg-dark);
 }
 
-.glass-card {
-  background: var(--bg-card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: var(--radius-lg);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-  transition: transform 0.2s ease, border-color 0.2s ease;
+/* Classic Win98 Bevel Inset (Sunken Box / Field) */
+.win-inset {
+  background: #ffffff;
+  border-top: 2px solid var(--win-bg-dark);
+  border-left: 2px solid var(--win-bg-dark);
+  border-right: 2px solid var(--win-white);
+  border-bottom: 2px solid var(--win-white);
+  box-shadow: inset 1px 1px 0 var(--win-black), inset -1px -1px 0 var(--win-bg-light);
 }
 
-.glass-card:hover {
-  border-color: var(--border-glow);
+/* Dark Screen Inset (For Video Stream / Canvas) */
+.win-screen-inset {
+  background: #050a0a;
+  border-top: 2px solid var(--win-bg-dark);
+  border-left: 2px solid var(--win-bg-dark);
+  border-right: 2px solid var(--win-white);
+  border-bottom: 2px solid var(--win-white);
+  box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.8);
 }
 
-.btn-primary {
-  background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
-  color: white;
-  font-weight: 600;
-  padding: 0.65rem 1.4rem;
-  border-radius: var(--radius-md);
-  border: none;
+/* Win98 Window Frame */
+.win-window {
+  background: var(--win-bg);
+  border-top: 2px solid var(--win-white);
+  border-left: 2px solid var(--win-white);
+  border-right: 2px solid var(--win-black);
+  border-bottom: 2px solid var(--win-black);
+  box-shadow: inset 1px 1px 0 var(--win-bg-light), inset -1px -1px 0 var(--win-bg-dark), 4px 4px 10px rgba(0, 0, 0, 0.3);
+  padding: 3px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Win98 Title Bar */
+.win-title-bar {
+  background: var(--win-title-blue);
+  color: var(--win-white);
+  padding: 3px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: bold;
+  font-size: 11px;
+  letter-spacing: 0.5px;
+}
+
+.win-title-bar-inactive {
+  background: var(--win-title-inactive);
+}
+
+/* Win98 Window Controls Buttons ([ _ ] [ 🗖 ] [ X ]) */
+.win-btn-control {
+  width: 16px;
+  height: 14px;
+  background: var(--win-bg);
+  border-top: 1px solid var(--win-white);
+  border-left: 1px solid var(--win-white);
+  border-right: 1px solid var(--win-black);
+  border-bottom: 1px solid var(--win-black);
+  font-size: 9px;
+  font-weight: bold;
+  line-height: 12px;
+  text-align: center;
+  cursor: pointer;
+  color: #000;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 2px;
+}
+
+.win-btn-control:active {
+  border-top: 1px solid var(--win-black);
+  border-left: 1px solid var(--win-black);
+  border-right: 1px solid var(--win-white);
+  border-bottom: 1px solid var(--win-white);
+  padding-top: 1px;
+  padding-left: 1px;
+}
+
+/* Win98 Push Button */
+.win-btn {
+  background: var(--win-bg);
+  border-top: 2px solid var(--win-white);
+  border-left: 2px solid var(--win-white);
+  border-right: 2px solid var(--win-black);
+  border-bottom: 2px solid var(--win-black);
+  box-shadow: inset 1px 1px 0 var(--win-bg-light), inset -1px -1px 0 var(--win-bg-dark);
+  padding: 4px 12px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: bold;
+  color: #000;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 14px 0 rgba(37, 99, 235, 0.39);
+  gap: 5px;
+
 }
 
-.btn-primary:hover {
-  opacity: 0.92;
-  transform: translateY(-1px);
+.win-btn:hover {
+  background: #d4d4d4;
 }
 
-.btn-secondary {
-  background: rgba(255, 255, 255, 0.06);
-  color: var(--text-main);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  padding: 0.65rem 1.2rem;
-  border-radius: var(--radius-md);
-  font-weight: 500;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  transition: all 0.2s ease;
+.win-btn:active, .win-btn-active {
+  border-top: 2px solid var(--win-black);
+  border-left: 2px solid var(--win-black);
+  border-right: 2px solid var(--win-white);
+  border-bottom: 2px solid var(--win-white);
+  box-shadow: inset 1px 1px 0 var(--win-bg-dark);
+  padding: 5px 11px 3px 13px;
 }
 
-.btn-secondary:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.25);
+/* Win98 Danger Red Push Button */
+.win-btn-danger {
+  background: #c0c0c0;
+  color: #800000;
 }
 
-.btn-danger {
-  background: rgba(239, 68, 68, 0.15);
-  color: #fca5a5;
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  padding: 0.6rem 1.2rem;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 500;
-  transition: all 0.2s ease;
+/* Win98 Status Bar */
+.win-status-bar {
+  margin-top: 4px;
+  padding: 3px 6px;
+  background: var(--win-bg);
+  border-top: 1px solid var(--win-bg-dark);
+  display: flex;
+  gap: 6px;
 }
 
-.btn-danger:hover {
-  background: rgba(239, 68, 68, 0.25);
-  border-color: rgba(239, 68, 68, 0.5);
+.win-status-field {
+  background: var(--win-bg);
+  border-top: 1px solid var(--win-bg-dark);
+  border-left: 1px solid var(--win-bg-dark);
+  border-right: 1px solid var(--win-white);
+  border-bottom: 1px solid var(--win-white);
+  padding: 2px 6px;
+  font-size: 11px;
 }
 
-/* Custom Scrollbars */
+/* Custom Win98 Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.6);
+  width: 16px;
+  height: 16px;
+  background: #dfdfdf;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 4px;
+  background: var(--win-bg);
+  border-top: 2px solid var(--win-white);
+  border-left: 2px solid var(--win-white);
+  border-right: 2px solid var(--win-black);
+  border-bottom: 2px solid var(--win-black);
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
+::-webkit-scrollbar-button {
+  background: var(--win-bg);
+  border-top: 1px solid var(--win-white);
+  border-left: 1px solid var(--win-white);
+  border-right: 1px solid var(--win-black);
+  border-bottom: 1px solid var(--win-black);
 }
