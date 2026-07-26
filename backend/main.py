@@ -27,7 +27,9 @@ app.include_router(health.router)
 app.include_router(detect.router)
 app.include_router(history.router)
 
-# Mount root aliases for direct endpoint access (/detect, /history, /reset)
+# Mount root aliases for direct endpoint access (/detect, /history, /reset, /ws/stream)
 app.add_api_route("/detect", detect.detect_people, methods=["POST"], tags=["Detection (Legacy Root Alias)"])
 app.add_api_route("/history", history.fetch_history, methods=["GET"], tags=["History (Legacy Root Alias)"])
 app.add_api_route("/reset", history.clear_history, methods=["POST"], tags=["History (Legacy Root Alias)"])
+app.add_api_websocket_route("/ws/stream", detect.websocket_stream_detection)
+

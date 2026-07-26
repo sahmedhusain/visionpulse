@@ -10,6 +10,7 @@ export async function detectFromImageFile(
   if (confThreshold !== undefined) {
     formData.append('conf_threshold', confThreshold.toString());
   }
+  formData.append('save_to_db', 'true');
 
   return apiClient<DetectionResponse>('/api/v1/detect', {
     method: 'POST',
@@ -20,7 +21,8 @@ export async function detectFromImageFile(
 export async function detectFromBase64(
   base64Data: string,
   imageName?: string,
-  confThreshold?: number
+  confThreshold?: number,
+  saveToDb: boolean = true
 ): Promise<DetectionResponse> {
   const formData = new FormData();
   formData.append('image_base64', base64Data);
@@ -28,6 +30,7 @@ export async function detectFromBase64(
   if (confThreshold !== undefined) {
     formData.append('conf_threshold', confThreshold.toString());
   }
+  formData.append('save_to_db', saveToDb ? 'true' : 'false');
 
   return apiClient<DetectionResponse>('/api/v1/detect', {
     method: 'POST',

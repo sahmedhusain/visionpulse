@@ -7,16 +7,21 @@ import { StatsPanel } from '../components/detection/StatsPanel';
 import { WebcamDetector } from '../components/detection/WebcamDetector';
 import { RegionAlert } from '../components/detection/RegionAlert';
 import { useDetection } from '../hooks/useDetection';
+import type { DetectionResponse } from '../types/detection';
 import { AlertCircle, Sliders } from 'lucide-react';
 
 export const DetectionPage: React.FC = () => {
-  const { result, isLoading, error, processFile, processBase64 } = useDetection();
+  const { result: httpResult, isLoading, error, processFile, processBase64 } = useDetection();
+  const [streamResult, setStreamResult] = useState<DetectionResponse | null>(null);
   const [selectedSample, setSelectedSample] = useState<string>('');
   const [rawImageSrc, setRawImageSrc] = useState<string>('');
   const [confThreshold, setConfThreshold] = useState<number>(0.35);
   const [maxThreshold, setMaxThreshold] = useState<number>(5);
 
+  const activeResult = streamResult || httpResult;
+
   const handleFileSelect = async (file: File) => {
+    setStreamResult(null);
     setSelectedSample('');
     const reader = new FileReader();
     reader.onload = (e) => setRawImageSrc(e.target?.result as string);
@@ -25,10 +30,10 @@ export const DetectionPage: React.FC = () => {
   };
 
   const handleSampleSelect = async (sampleName: string, sampleUrl: string) => {
+    setStreamResult(null);
     setSelectedSample(sampleName);
     setRawImageSrc(sampleUrl);
-    
-    // Fetch image as blob and send to backend for detection
+
     const res = await fetch(sampleUrl);
     const blob = await res.blob();
     const file = new File([blob], sampleName, { type: 'image/jpeg' });
@@ -37,14 +42,20 @@ export const DetectionPage: React.FC = () => {
 
   const handleWebcamFrame = async (base64Frame: string) => {
     setRawImageSrc(base64Frame);
-    await processBase64(base64Frame, 'webcam_stream.jpg', confThreshold);
+    // Don't save to DB on every stream frame to prevent DB congestion
+    const res = await processBase64(base64Frame, 'webcam_stream.jpg', confThreshold);
+    setStreamResult(res);
+  };
+
+  const handleStreamResult = (res: DetectionResponse) => {
+    setStreamResult(res);
   };
 
   return (
     <div style={{ padding: '0 1.5rem 2rem 1.5rem', display: 'grid', gridTemplateColumns: '1fr 340px', gap: '1.5rem' }}>
       {/* Left Column: Canvas Preview & Metrics */}
       <div>
-        <Card title="Visual Person Detection & Tracking">
+        <Card title="Visual Person Detection & Live Stream">
           {error && (
             <div style={{ background: 'rgba(239, 68, 68, 0.15)', border: '1px solid rgba(239, 68, 68, 0.3)', padding: '0.75rem 1rem', borderRadius: '8px', color: '#fca5a5', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem' }}>
               <AlertCircle size={16} /> {error}
@@ -52,21 +63,21 @@ export const DetectionPage: React.FC = () => {
           )}
 
           <DetectionCanvas
-            processedImage={result?.processed_image}
+            processedImage={activeResult?.processed_image}
             rawImageSrc={rawImageSrc}
-            detections={result?.detections || []}
-            isLoading={isLoading}
+            detections={activeResult?.detections || []}
+            isLoading={isLoading && !streamResult}
           />
 
           <StatsPanel
-            count={result?.count || 0}
-            avgConfidence={result?.avg_confidence || 0}
-            inferenceTimeMs={result?.inference_time_ms || 0}
+            count={activeResult?.count || 0}
+            avgConfidence={activeResult?.avg_confidence || 0}
+            inferenceTimeMs={activeResult?.inference_time_ms || 0}
             threshold={maxThreshold}
           />
 
           <RegionAlert
-            currentCount={result?.count || 0}
+            currentCount={activeResult?.count || 0}
             maxThreshold={maxThreshold}
             onThresholdChange={setMaxThreshold}
           />
@@ -78,7 +89,12 @@ export const DetectionPage: React.FC = () => {
         <Card title="Input Source Controls">
           <ImageUploader onFileSelect={handleFileSelect} isLoading={isLoading} />
           <SampleSelector onSelectSample={handleSampleSelect} selectedSample={selectedSample} />
-          <WebcamDetector onFrameCapture={handleWebcamFrame} isProcessing={isLoading} />
+          <WebcamDetector
+            onFrameCapture={handleWebcamFrame}
+            onStreamResult={handleStreamResult}
+            confThreshold={confThreshold}
+            isProcessing={isLoading}
+          />
         </Card>
 
         <Card title="Model Sensitivity">

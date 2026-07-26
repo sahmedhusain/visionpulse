@@ -1,7 +1,8 @@
-from fastapi import APIRouter, UploadFile, File, Form, Depends, HTTPException, status
+import json
+from fastapi import APIRouter, UploadFile, File, Form, Depends, HTTPException, status, WebSocket, WebSocketDisconnect
 from sqlalchemy.orm import Session
 from typing import Optional
-from backend.core.database import get_db
+from backend.core.database import SessionLocal, get_db
 from backend.schemas.detection import DetectionResponse
 from backend.services.preprocessor import decode_image_bytes, decode_base64_image, encode_image_to_base64, resize_for_inference
 from backend.services.detector import detector_service
@@ -16,6 +17,7 @@ async def detect_people(
     image_base64: Optional[str] = Form(None),
     conf_threshold: Optional[float] = Form(None),
     image_name: Optional[str] = Form(None),
+    save_to_db: bool = Form(True),
     db: Session = Depends(get_db)
 ):
     if not file and not image_base64:
@@ -36,7 +38,7 @@ async def detect_people(
             contents = await file.read()
             img_bgr = decode_image_bytes(contents)
         else:
-            filename = image_name or "base64_frame.jpg"
+            filename = image_name or "stream_frame.jpg"
             img_bgr = decode_base64_image(image_base64)
     except Exception as e:
         raise HTTPException(
@@ -50,13 +52,16 @@ async def detect_people(
     annotated_img = draw_detection_overlay(img_resized, detections)
     processed_base64 = encode_image_to_base64(annotated_img)
 
-    record = save_detection_record(
-        db=db,
-        count=count,
-        avg_confidence=avg_conf,
-        inference_time_ms=inference_time_ms,
-        image_name=filename
-    )
+    record_id = None
+    if save_to_db:
+        record = save_detection_record(
+            db=db,
+            count=count,
+            avg_confidence=avg_conf,
+            inference_time_ms=inference_time_ms,
+            image_name=filename
+        )
+        record_id = record.id
 
     return DetectionResponse(
         count=count,
@@ -64,8 +69,66 @@ async def detect_people(
         inference_time_ms=inference_time_ms,
         detections=detections,
         processed_image=processed_base64,
-        record_id=record.id
+        record_id=record_id
     )
+
+# Real-Time Low Latency WebSocket Stream Route
+@router.websocket("/ws/stream")
+async def websocket_stream_detection(websocket: WebSocket):
+    await websocket.accept()
+    db = SessionLocal()
+    frame_counter = 0
+
+    try:
+        while True:
+            data_str = await websocket.receive_text()
+            try:
+                payload = json.loads(data_str)
+                base64_img = payload.get("image")
+                conf_threshold = payload.get("conf_threshold", None)
+            except Exception:
+                base64_img = data_str
+                conf_threshold = None
+
+            if not base64_img:
+                continue
+
+            img_bgr = decode_base64_image(base64_img)
+            img_resized = resize_for_inference(img_bgr, max_dim=640)
+            detections, count, avg_conf, inference_time_ms = detector_service.detect(img_resized, conf_threshold)
+
+            annotated_img = draw_detection_overlay(img_resized, detections)
+            processed_base64 = encode_image_to_base64(annotated_img)
+
+            # Log to DB periodically (every 10 frames) to avoid DB locks during streaming
+            frame_counter += 1
+            record_id = None
+            if frame_counter % 10 == 0:
+                record = save_detection_record(
+                    db=db,
+                    count=count,
+                    avg_confidence=avg_conf,
+                    inference_time_ms=inference_time_ms,
+                    image_name="live_stream_frame.jpg"
+                )
+                record_id = record.id
+
+            response_data = {
+                "count": count,
+                "avg_confidence": avg_conf,
+                "inference_time_ms": inference_time_ms,
+                "detections": [d.dict() for d in detections],
+                "processed_image": processed_base64,
+                "record_id": record_id
+            }
+
+            await websocket.send_text(json.dumps(response_data))
+    except WebSocketDisconnect:
+        pass
+    except Exception as e:
+        print(f"WebSocket stream error: {e}")
+    finally:
+        db.close()
 
 # Also expose top-level /detect route for compatibility
 @router.post("/detect_legacy", response_model=DetectionResponse, include_in_schema=False)
