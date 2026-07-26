@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { DetectionCanvas } from '../components/detection/DetectionCanvas';
 import { StatsPanel } from '../components/detection/StatsPanel';
 import { InputSourcesWindow } from '../components/detection/InputSourcesWindow';
+import { AnalyticsWindow } from '../components/detection/AnalyticsWindow';
 import { SettingsWindow } from '../components/detection/SettingsWindow';
 import { useDetection } from '../hooks/useDetection';
 import type { DetectionResponse } from '../types/detection';
@@ -62,8 +63,8 @@ export const DetectionPage: React.FC<DetectionPageProps> = ({
   };
 
   return (
-    <div style={{ padding: '0 8px 40px 8px', display: 'grid', gridTemplateColumns: '1fr 340px', gap: '8px' }}>
-      {/* Left Column: Visual Stream Display & Clean Metrics */}
+    <div style={{ padding: '8px 8px 50px 8px', display: 'grid', gridTemplateColumns: '1fr 360px', gap: '8px' }}>
+      {/* Left Column: Visual Monitor Display & Telemetry Stats */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
         {error && (
           <div className="win-inset" style={{ background: '#ffc0c0', padding: '6px 10px', color: '#800000', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 'bold' }}>
@@ -71,7 +72,7 @@ export const DetectionPage: React.FC<DetectionPageProps> = ({
           </div>
         )}
 
-        {/* Visual Stream Display Canvas with Fullscreen Button */}
+        {/* Visual Stream Canvas Monitor (With Fullscreen Button) */}
         <DetectionCanvas
           processedImage={activeResult?.processed_image}
           rawImageSrc={rawImageSrc}
@@ -79,7 +80,7 @@ export const DetectionPage: React.FC<DetectionPageProps> = ({
           isLoading={isLoading && !streamResult}
         />
 
-        {/* Live Metrics Window */}
+        {/* Real-Time Metrics Status Panel */}
         <StatsPanel
           count={activeResult?.count || 0}
           avgConfidence={activeResult?.avg_confidence || 0}
@@ -88,7 +89,7 @@ export const DetectionPage: React.FC<DetectionPageProps> = ({
         />
       </div>
 
-      {/* Right Column: Unified Input Sources Window (Zero Duplication) */}
+      {/* Right Column: Unified Input Sources & Advanced Telemetry Analytics */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
         <InputSourcesWindow
           onFileSelect={handleFileSelect}
@@ -99,9 +100,18 @@ export const DetectionPage: React.FC<DetectionPageProps> = ({
           confThreshold={confThreshold}
           isLoading={isLoading}
         />
+
+        {/* Advanced Retro Telemetry & Crowd Density Gauge Window */}
+        <AnalyticsWindow
+          count={activeResult?.count || 0}
+          avgConfidence={activeResult?.avg_confidence || 0}
+          inferenceTimeMs={activeResult?.inference_time_ms || 0}
+          detections={activeResult?.detections || []}
+          maxThreshold={maxThreshold}
+        />
       </div>
 
-      {/* Separated Settings Modal Window (Not shown in main page layout) */}
+      {/* Separated Settings Window (Opened via Control Panel button or Taskbar) */}
       <SettingsWindow
         isOpen={isSettingsOpen}
         onClose={onCloseSettings}
