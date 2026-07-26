@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Header } from './components/common/Header';
 import { DetectionPage } from './pages/DetectionPage';
 import { HistoryPage } from './pages/HistoryPage';
 import { WinTaskbar } from './components/win98/WinTaskbar';
@@ -33,15 +32,8 @@ export const App: React.FC = () => {
   }, []);
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#008080', paddingBottom: '36px' }}>
-      <Header
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        onOpenSettings={() => setIsSettingsOpen(true)}
-        isBackendHealthy={isBackendHealthy}
-      />
-
-      <main style={{ flex: 1 }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#008080', paddingBottom: '48px' }}>
+      <main style={{ flex: 1, paddingTop: '8px' }}>
         {activeTab === 'detection' ? (
           <DetectionPage
             isSettingsOpen={isSettingsOpen}
@@ -56,9 +48,11 @@ export const App: React.FC = () => {
         )}
       </main>
 
+      {/* Enlarged 44px Win98 Desktop Taskbar Footer */}
       <WinTaskbar
         activeTab={activeTab}
         onTabChange={setActiveTab}
+        onOpenSettings={() => setIsSettingsOpen(true)}
         isBackendHealthy={isBackendHealthy}
       />
     </div>
