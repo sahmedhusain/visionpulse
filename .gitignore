@@ -107,6 +107,7 @@ venv/
 __pycache__/
 *.pyc
 *.pt
+Ultralytics/
 
 # Local databases and application state
 backend/app/data/
