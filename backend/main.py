@@ -32,4 +32,5 @@ app.add_api_route("/detect", detect.detect_people, methods=["POST"], tags=["Dete
 app.add_api_route("/history", history.fetch_history, methods=["GET"], tags=["History (Legacy Root Alias)"])
 app.add_api_route("/reset", history.clear_history, methods=["POST"], tags=["History (Legacy Root Alias)"])
 app.add_api_websocket_route("/ws/stream", detect.websocket_stream_detection)
+app.add_api_websocket_route("/ws/ipstream", detect.websocket_ip_camera_stream)
 

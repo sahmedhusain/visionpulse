@@ -1,5 +1,6 @@
 import json
-from fastapi import APIRouter, UploadFile, File, Form, Depends, HTTPException, status, WebSocket, WebSocketDisconnect
+import asyncio
+from fastapi import APIRouter, UploadFile, File, Form, Depends, HTTPException, status, WebSocket, WebSocketDisconnect, Query
 from sqlalchemy.orm import Session
 from typing import Optional
 from backend.core.database import SessionLocal, get_db
@@ -8,6 +9,7 @@ from backend.services.preprocessor import decode_image_bytes, decode_base64_imag
 from backend.services.detector import detector_service
 from backend.services.overlay import draw_detection_overlay
 from backend.services.history_service import save_detection_record
+from backend.services.stream_service import IPCameraStreamer
 
 router = APIRouter(prefix="/api/v1", tags=["Detection"])
 
@@ -72,7 +74,7 @@ async def detect_people(
         record_id=record_id
     )
 
-# Real-Time Low Latency WebSocket Stream Route
+# WebSocket Stream for Local Browser Webcam Frames
 @router.websocket("/ws/stream")
 async def websocket_stream_detection(websocket: WebSocket):
     await websocket.accept()
@@ -100,7 +102,6 @@ async def websocket_stream_detection(websocket: WebSocket):
             annotated_img = draw_detection_overlay(img_resized, detections)
             processed_base64 = encode_image_to_base64(annotated_img)
 
-            # Log to DB periodically (every 10 frames) to avoid DB locks during streaming
             frame_counter += 1
             record_id = None
             if frame_counter % 10 == 0:
@@ -109,7 +110,7 @@ async def websocket_stream_detection(websocket: WebSocket):
                     count=count,
                     avg_confidence=avg_conf,
                     inference_time_ms=inference_time_ms,
-                    image_name="live_stream_frame.jpg"
+                    image_name="webcam_stream_frame.jpg"
                 )
                 record_id = record.id
 
@@ -130,7 +131,26 @@ async def websocket_stream_detection(websocket: WebSocket):
     finally:
         db.close()
 
-# Also expose top-level /detect route for compatibility
+# WebSocket Stream for IP Camera / RTSP / NDI Feed
+@router.websocket("/ws/ipstream")
+async def websocket_ip_camera_stream(
+    websocket: WebSocket,
+    url: str = Query(...),
+    conf_threshold: float = Query(0.35)
+):
+    await websocket.accept()
+    streamer = IPCameraStreamer(url)
+
+    try:
+        async for frame_data in streamer.generate_frames(conf_threshold=conf_threshold):
+            await websocket.send_text(json.dumps(frame_data))
+    except WebSocketDisconnect:
+        pass
+    except Exception as e:
+        await websocket.send_text(json.dumps({"error": f"Stream failed: {str(e)}"}))
+        await websocket.close()
+
+# Legacy Root Aliases
 @router.post("/detect_legacy", response_model=DetectionResponse, include_in_schema=False)
 async def detect_legacy(
     file: Optional[UploadFile] = File(None),
