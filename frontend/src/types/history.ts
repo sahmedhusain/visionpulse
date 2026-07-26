@@ -15,6 +15,8 @@ export interface HistoryResponse {
 export interface HistoryFilters {
   minConfidence?: number;
   minCount?: number;
+  maxCount?: number;
+  searchQuery?: string;
   startDate?: string;
   endDate?: string;
   limit?: number;
