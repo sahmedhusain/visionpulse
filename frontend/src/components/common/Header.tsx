@@ -1,13 +1,19 @@
 import React from 'react';
-import { ShieldCheck, Monitor, History, Video } from 'lucide-react';
+import { ShieldCheck, Monitor, History, Settings, Video } from 'lucide-react';
 
 interface HeaderProps {
   activeTab: 'detection' | 'history';
   onTabChange: (tab: 'detection' | 'history') => void;
+  onOpenSettings: () => void;
   isBackendHealthy: boolean;
 }
 
-export const Header: React.FC<HeaderProps> = ({ activeTab, onTabChange, isBackendHealthy }) => {
+export const Header: React.FC<HeaderProps> = ({
+  activeTab,
+  onTabChange,
+  onOpenSettings,
+  isBackendHealthy
+}) => {
   return (
     <div style={{ margin: '8px 8px 0 8px' }}>
       {/* Top Application Win98 Window */}
@@ -30,7 +36,7 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, onTabChange, isBacken
           <span style={{ cursor: 'pointer' }}><u>E</u>dit</span>
           <span style={{ cursor: 'pointer' }}><u>V</u>iew</span>
           <span style={{ cursor: 'pointer' }}><u>S</u>ource</span>
-          <span style={{ cursor: 'pointer' }}><u>T</u>ools</span>
+          <span style={{ cursor: 'pointer', fontWeight: 'bold' }} onClick={onOpenSettings}><u>O</u>ptions / Settings</span>
           <span style={{ cursor: 'pointer' }}><u>H</u>elp</span>
         </div>
 
@@ -48,6 +54,13 @@ export const Header: React.FC<HeaderProps> = ({ activeTab, onTabChange, isBacken
               onClick={() => onTabChange('history')}
             >
               <History size={14} /> History Log & Analytics
+            </button>
+            <button
+              className="win-btn"
+              onClick={onOpenSettings}
+              style={{ fontWeight: 'bold', color: '#000080' }}
+            >
+              <Settings size={14} /> Control Panel Settings
             </button>
           </div>
 

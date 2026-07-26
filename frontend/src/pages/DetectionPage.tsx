@@ -1,21 +1,33 @@
 import React, { useState } from 'react';
 import { DetectionCanvas } from '../components/detection/DetectionCanvas';
 import { StatsPanel } from '../components/detection/StatsPanel';
-import { CameraSourceWindow } from '../components/detection/CameraSourceWindow';
-import { FileUploadWindow } from '../components/detection/FileUploadWindow';
-import { SampleGalleryWindow } from '../components/detection/SampleGalleryWindow';
+import { InputSourcesWindow } from '../components/detection/InputSourcesWindow';
 import { SettingsWindow } from '../components/detection/SettingsWindow';
 import { useDetection } from '../hooks/useDetection';
 import type { DetectionResponse } from '../types/detection';
 import { AlertCircle } from 'lucide-react';
 
-export const DetectionPage: React.FC = () => {
+interface DetectionPageProps {
+  isSettingsOpen: boolean;
+  onCloseSettings: () => void;
+  confThreshold: number;
+  onConfThresholdChange: (newVal: number) => void;
+  maxThreshold: number;
+  onMaxThresholdChange: (newVal: number) => void;
+}
+
+export const DetectionPage: React.FC<DetectionPageProps> = ({
+  isSettingsOpen,
+  onCloseSettings,
+  confThreshold,
+  onConfThresholdChange,
+  maxThreshold,
+  onMaxThresholdChange
+}) => {
   const { result: httpResult, isLoading, error, processFile, processBase64 } = useDetection();
   const [streamResult, setStreamResult] = useState<DetectionResponse | null>(null);
   const [selectedSample, setSelectedSample] = useState<string>('');
   const [rawImageSrc, setRawImageSrc] = useState<string>('');
-  const [confThreshold, setConfThreshold] = useState<number>(0.35);
-  const [maxThreshold, setMaxThreshold] = useState<number>(5);
 
   const activeResult = streamResult || httpResult;
 
@@ -51,7 +63,7 @@ export const DetectionPage: React.FC = () => {
 
   return (
     <div style={{ padding: '0 8px 40px 8px', display: 'grid', gridTemplateColumns: '1fr 340px', gap: '8px' }}>
-      {/* Left Column: Visual Monitor Display & Metrics */}
+      {/* Left Column: Visual Stream Display & Clean Metrics */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
         {error && (
           <div className="win-inset" style={{ background: '#ffc0c0', padding: '6px 10px', color: '#800000', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 'bold' }}>
@@ -59,7 +71,7 @@ export const DetectionPage: React.FC = () => {
           </div>
         )}
 
-        {/* Visual Monitor Canvas (With Fullscreen Button) */}
+        {/* Visual Stream Display Canvas with Fullscreen Button */}
         <DetectionCanvas
           processedImage={activeResult?.processed_image}
           rawImageSrc={rawImageSrc}
@@ -67,7 +79,7 @@ export const DetectionPage: React.FC = () => {
           isLoading={isLoading && !streamResult}
         />
 
-        {/* Separated Win98 Status & Metrics Window */}
+        {/* Live Metrics Window */}
         <StatsPanel
           count={activeResult?.count || 0}
           avgConfidence={activeResult?.avg_confidence || 0}
@@ -76,30 +88,28 @@ export const DetectionPage: React.FC = () => {
         />
       </div>
 
-      {/* Right Column: Separated Controls & Input Sources */}
+      {/* Right Column: Unified Input Sources Window (Zero Duplication) */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        {/* Separated Window 1: Camera & Stream Input */}
-        <CameraSourceWindow
+        <InputSourcesWindow
+          onFileSelect={handleFileSelect}
+          onSelectSample={handleSampleSelect}
+          selectedSample={selectedSample}
           onFrameCapture={handleWebcamFrame}
           onStreamResult={handleStreamResult}
           confThreshold={confThreshold}
-          isProcessing={isLoading}
-        />
-
-        {/* Separated Window 2: File Upload */}
-        <FileUploadWindow onFileSelect={handleFileSelect} isLoading={isLoading} />
-
-        {/* Separated Window 3: Demo Sample Library */}
-        <SampleGalleryWindow onSelectSample={handleSampleSelect} selectedSample={selectedSample} />
-
-        {/* Separated Window 4: Settings & Thresholds */}
-        <SettingsWindow
-          confThreshold={confThreshold}
-          onConfThresholdChange={setConfThreshold}
-          maxThreshold={maxThreshold}
-          onMaxThresholdChange={setMaxThreshold}
+          isLoading={isLoading}
         />
       </div>
+
+      {/* Separated Settings Modal Window (Not shown in main page layout) */}
+      <SettingsWindow
+        isOpen={isSettingsOpen}
+        onClose={onCloseSettings}
+        confThreshold={confThreshold}
+        onConfThresholdChange={onConfThresholdChange}
+        maxThreshold={maxThreshold}
+        onMaxThresholdChange={onMaxThresholdChange}
+      />
     </div>
   );
 };

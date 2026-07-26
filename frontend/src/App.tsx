@@ -7,6 +7,9 @@ import { WinTaskbar } from './components/win98/WinTaskbar';
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'detection' | 'history'>('detection');
   const [isBackendHealthy, setIsBackendHealthy] = useState<boolean>(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
+  const [confThreshold, setConfThreshold] = useState<number>(0.35);
+  const [maxThreshold, setMaxThreshold] = useState<number>(5);
 
   useEffect(() => {
     const checkHealth = async () => {
@@ -16,7 +19,6 @@ export const App: React.FC = () => {
         if (res.ok) {
           setIsBackendHealthy(true);
         } else {
-          // Fallback to 8001
           const fallbackRes = await fetch('http://localhost:8001/health');
           setIsBackendHealthy(fallbackRes.ok);
         }
@@ -35,11 +37,23 @@ export const App: React.FC = () => {
       <Header
         activeTab={activeTab}
         onTabChange={setActiveTab}
+        onOpenSettings={() => setIsSettingsOpen(true)}
         isBackendHealthy={isBackendHealthy}
       />
 
       <main style={{ flex: 1 }}>
-        {activeTab === 'detection' ? <DetectionPage /> : <HistoryPage />}
+        {activeTab === 'detection' ? (
+          <DetectionPage
+            isSettingsOpen={isSettingsOpen}
+            onCloseSettings={() => setIsSettingsOpen(false)}
+            confThreshold={confThreshold}
+            onConfThresholdChange={setConfThreshold}
+            maxThreshold={maxThreshold}
+            onMaxThresholdChange={setMaxThreshold}
+          />
+        ) : (
+          <HistoryPage />
+        )}
       </main>
 
       <WinTaskbar
