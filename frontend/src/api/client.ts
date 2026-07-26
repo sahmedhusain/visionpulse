@@ -16,9 +16,9 @@ export async function getApiBaseUrl(): Promise<string> {
     } catch {}
   }
 
-  // Default fallback
-  resolvedBaseUrl = envUrl || 'http://localhost:8000';
-  return resolvedBaseUrl;
+  const fallback = envUrl || 'http://localhost:8000';
+  resolvedBaseUrl = fallback;
+  return fallback;
 }
 
 export async function apiClient<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
@@ -43,7 +43,6 @@ export async function apiClient<T>(endpoint: string, options: RequestInit = {}):
 
     return response.json();
   } catch (err: any) {
-    // If request failed, reset resolvedBaseUrl so it re-probes
     resolvedBaseUrl = null;
     throw err;
   }

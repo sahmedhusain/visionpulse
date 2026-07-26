@@ -1,11 +1,10 @@
 import React from 'react';
-import { Card } from '../components/common/Card';
-import { Button } from '../components/common/Button';
 import { HistoryTable } from '../components/history/HistoryTable';
 import { HistoryFilters } from '../components/history/HistoryFilters';
 import { HistoryChart } from '../components/history/HistoryChart';
 import { useHistory } from '../hooks/useHistory';
 import { Download, Trash2, TrendingUp, History } from 'lucide-react';
+import { WinWindow } from '../components/win98/WinWindow';
 
 export const HistoryPage: React.FC = () => {
   const { data, filters, setFilters, isLoading, clearLogs, exportCsv } = useHistory();
@@ -15,40 +14,46 @@ export const HistoryPage: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '0 1.5rem 2rem 1.5rem' }}>
-      <Card
-        title="Detection History & Crowd Analytics"
-        subtitle={`Total Saved Records: ${data.total}`}
-        icon={<History size={20} />}
+    <div style={{ padding: '0 8px 40px 8px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+      <WinWindow
+        title={`RPD Detection Database & History Log (${data.total} Total Records)`}
+        icon={<History size={14} />}
+        statusBarContent={
+          <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+            <span>Database: SQLite (detecto.db)</span>
+            <span>Total Logged Entries: {data.total}</span>
+            <span>Mode: Read/Write</span>
+          </div>
+        }
       >
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.75rem', marginBottom: '1rem' }}>
-          <Button variant="secondary" icon={<Download size={16} />} onClick={exportCsv}>
-            Export to CSV
-          </Button>
-          <Button variant="danger" icon={<Trash2 size={16} />} onClick={clearLogs}>
-            Clear History
-          </Button>
+        {/* Action Toolbar */}
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '6px', marginBottom: '8px' }}>
+          <button className="win-btn" onClick={exportCsv}>
+            <Download size={12} /> Export CSV
+          </button>
+          <button className="win-btn win-btn-danger" onClick={clearLogs}>
+            <Trash2 size={12} /> Clear Database
+          </button>
         </div>
 
-        {/* Analytics Chart */}
-        <div style={{ background: 'rgba(15, 23, 42, 0.4)', padding: '1rem', borderRadius: '12px', marginBottom: '1.5rem', border: '1px solid rgba(255,255,255,0.06)' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-            <TrendingUp size={18} color="var(--accent-cyan)" />
-            <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>Crowd Size Trend over Scans</span>
+        {/* Analytics Chart Box */}
+        <div className="win-inset" style={{ padding: '8px', marginBottom: '8px', background: '#ffffff' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px', fontWeight: 'bold', fontSize: '11px', color: '#000080' }}>
+            <TrendingUp size={14} /> RPD Crowd Density Trend Analytics
           </div>
           <HistoryChart records={data.records} />
         </div>
 
-        {/* Filter Controls */}
+        {/* Filter Controls Window */}
         <HistoryFilters
           filters={filters}
           onFilterChange={setFilters}
           onResetFilters={handleResetFilters}
         />
 
-        {/* Records Data Table */}
+        {/* Data Table Window */}
         <HistoryTable records={data.records} total={data.total} isLoading={isLoading} />
-      </Card>
+      </WinWindow>
     </div>
   );
 };

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Header } from './components/common/Header';
 import { DetectionPage } from './pages/DetectionPage';
 import { HistoryPage } from './pages/HistoryPage';
+import { WinTaskbar } from './components/win98/WinTaskbar';
 
 export const App: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'detection' | 'history'>('detection');
@@ -15,7 +16,9 @@ export const App: React.FC = () => {
         if (res.ok) {
           setIsBackendHealthy(true);
         } else {
-          setIsBackendHealthy(false);
+          // Fallback to 8001
+          const fallbackRes = await fetch('http://localhost:8001/health');
+          setIsBackendHealthy(fallbackRes.ok);
         }
       } catch {
         setIsBackendHealthy(false);
@@ -28,7 +31,7 @@ export const App: React.FC = () => {
   }, []);
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#008080', paddingBottom: '36px' }}>
       <Header
         activeTab={activeTab}
         onTabChange={setActiveTab}
@@ -39,9 +42,11 @@ export const App: React.FC = () => {
         {activeTab === 'detection' ? <DetectionPage /> : <HistoryPage />}
       </main>
 
-      <footer style={{ textAlign: 'center', padding: '1rem', color: 'var(--text-muted)', fontSize: '0.8rem', borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-        Detecto AI Vision System &bull; Powered by YOLOv8 & FastAPI &bull; React Vite TS
-      </footer>
+      <WinTaskbar
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        isBackendHealthy={isBackendHealthy}
+      />
     </div>
   );
 };

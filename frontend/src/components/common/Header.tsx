@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShieldCheck, Eye, History, Activity } from 'lucide-react';
+import { ShieldCheck, Monitor, History, Video } from 'lucide-react';
 
 interface HeaderProps {
   activeTab: 'detection' | 'history';
@@ -9,42 +9,57 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ activeTab, onTabChange, isBackendHealthy }) => {
   return (
-    <header className="glass-card" style={{ margin: '1rem', padding: '1rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-        <div style={{ background: 'linear-gradient(135deg, #0284c7, #2563eb)', width: '38px', height: '38px', borderRadius: '10px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <ShieldCheck size={24} color="#ffffff" />
+    <div style={{ margin: '8px 8px 0 8px' }}>
+      {/* Top Application Win98 Window */}
+      <div className="win-window" style={{ marginBottom: '8px' }}>
+        <div className="win-title-bar">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <ShieldCheck size={16} />
+            <span>RPD - Real-Time Person Detection & Visual Analytics System v1.0</span>
+          </div>
+          <div style={{ display: 'flex' }}>
+            <button className="win-btn-control">_</button>
+            <button className="win-btn-control">🗖</button>
+            <button className="win-btn-control">X</button>
+          </div>
         </div>
-        <div>
-          <h1 style={{ fontSize: '1.4rem', fontWeight: 700, letterSpacing: '-0.02em', margin: 0 }}>
-            DETECTO <span style={{ color: 'var(--accent-cyan)', fontSize: '0.85rem', fontWeight: 500 }}>AI Vision</span>
-          </h1>
-          <p style={{ fontSize: '0.8rem', color: 'var(--text-muted)', margin: 0 }}>Real-Time Person Detection & Crowd Analytics</p>
+
+        {/* Win98 Classic Menu Bar */}
+        <div style={{ display: 'flex', gap: '12px', padding: '2px 8px', borderBottom: '1px solid #808080', fontSize: '11px', background: '#c0c0c0' }}>
+          <span style={{ cursor: 'pointer' }}><u>F</u>ile</span>
+          <span style={{ cursor: 'pointer' }}><u>E</u>dit</span>
+          <span style={{ cursor: 'pointer' }}><u>V</u>iew</span>
+          <span style={{ cursor: 'pointer' }}><u>S</u>ource</span>
+          <span style={{ cursor: 'pointer' }}><u>T</u>ools</span>
+          <span style={{ cursor: 'pointer' }}><u>H</u>elp</span>
+        </div>
+
+        {/* Win98 Tab Navigation Toolbar */}
+        <div style={{ display: 'flex', gap: '4px', padding: '4px 6px', background: '#c0c0c0', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', gap: '4px' }}>
+            <button
+              className={`win-btn ${activeTab === 'detection' ? 'win-btn-active' : ''}`}
+              onClick={() => onTabChange('detection')}
+            >
+              <Monitor size={14} /> Detection Monitor
+            </button>
+            <button
+              className={`win-btn ${activeTab === 'history' ? 'win-btn-active' : ''}`}
+              onClick={() => onTabChange('history')}
+            >
+              <History size={14} /> History Log & Analytics
+            </button>
+          </div>
+
+          {/* System Status Indicator */}
+          <div className="win-inset" style={{ padding: '2px 8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Video size={12} color={isBackendHealthy ? '#008000' : '#800000'} />
+            <span style={{ fontSize: '11px', fontWeight: 'bold', color: isBackendHealthy ? '#008000' : '#800000' }}>
+              {isBackendHealthy ? 'YOLOv8 Engine Ready' : 'Backend Connecting...'}
+            </span>
+          </div>
         </div>
       </div>
-
-      <nav style={{ display: 'flex', gap: '0.5rem', background: 'rgba(0,0,0,0.3)', padding: '4px', borderRadius: '12px' }}>
-        <button
-          onClick={() => onTabChange('detection')}
-          className={activeTab === 'detection' ? 'btn-primary' : 'btn-secondary'}
-          style={{ border: 'none', borderRadius: '8px' }}
-        >
-          <Eye size={18} /> Detection View
-        </button>
-        <button
-          onClick={() => onTabChange('history')}
-          className={activeTab === 'history' ? 'btn-primary' : 'btn-secondary'}
-          style={{ border: 'none', borderRadius: '8px' }}
-        >
-          <History size={18} /> History & Analytics
-        </button>
-      </nav>
-
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.04)', padding: '6px 12px', borderRadius: '20px', fontSize: '0.8rem' }}>
-        <Activity size={16} color={isBackendHealthy ? 'var(--accent-emerald)' : 'var(--accent-rose)'} />
-        <span style={{ color: isBackendHealthy ? 'var(--accent-emerald)' : 'var(--accent-rose)', fontWeight: 500 }}>
-          {isBackendHealthy ? 'YOLOv8 Active' : 'Connecting to API...'}
-        </span>
-      </div>
-    </header>
+    </div>
   );
 };
