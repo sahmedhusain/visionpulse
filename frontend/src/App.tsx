@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { DetectionPage } from './pages/DetectionPage';
 import { HistoryPage } from './pages/HistoryPage';
+import { SettingsPage } from './pages/SettingsPage';
 import { WinTaskbar } from './components/win98/WinTaskbar';
 
 export const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'detection' | 'history'>('detection');
+  const [activeTab, setActiveTab] = useState<'detection' | 'history' | 'settings'>('detection');
   const [isBackendHealthy, setIsBackendHealthy] = useState<boolean>(false);
-  const [isSettingsOpen, setIsSettingsOpen] = useState<boolean>(false);
   const [confThreshold, setConfThreshold] = useState<number>(0.35);
   const [maxThreshold, setMaxThreshold] = useState<number>(5);
+  const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
+  const [soundPitch, setSoundPitch] = useState<number>(880);
+  const [saveHistory, setSaveHistory] = useState<boolean>(true);
 
   useEffect(() => {
     const checkHealth = async () => {
@@ -34,17 +37,28 @@ export const App: React.FC = () => {
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#008080', paddingBottom: '48px' }}>
       <main style={{ flex: 1, paddingTop: '8px' }}>
-        {activeTab === 'detection' ? (
+        {activeTab === 'detection' && (
           <DetectionPage
-            isSettingsOpen={isSettingsOpen}
-            onCloseSettings={() => setIsSettingsOpen(false)}
+            confThreshold={confThreshold}
+            maxThreshold={maxThreshold}
+            soundEnabled={soundEnabled}
+            soundPitch={soundPitch}
+          />
+        )}
+        {activeTab === 'history' && <HistoryPage />}
+        {activeTab === 'settings' && (
+          <SettingsPage
             confThreshold={confThreshold}
             onConfThresholdChange={setConfThreshold}
             maxThreshold={maxThreshold}
             onMaxThresholdChange={setMaxThreshold}
+            soundEnabled={soundEnabled}
+            onSoundEnabledChange={setSoundEnabled}
+            soundPitch={soundPitch}
+            onSoundPitchChange={setSoundPitch}
+            saveHistory={saveHistory}
+            onSaveHistoryChange={setSaveHistory}
           />
-        ) : (
-          <HistoryPage />
         )}
       </main>
 
@@ -52,7 +66,6 @@ export const App: React.FC = () => {
       <WinTaskbar
         activeTab={activeTab}
         onTabChange={setActiveTab}
-        onOpenSettings={() => setIsSettingsOpen(true)}
         isBackendHealthy={isBackendHealthy}
       />
     </div>

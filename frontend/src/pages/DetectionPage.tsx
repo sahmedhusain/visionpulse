@@ -3,27 +3,20 @@ import { DetectionCanvas } from '../components/detection/DetectionCanvas';
 import { StatsPanel } from '../components/detection/StatsPanel';
 import { InputSourcesWindow } from '../components/detection/InputSourcesWindow';
 import { AnalyticsWindow } from '../components/detection/AnalyticsWindow';
-import { SettingsWindow } from '../components/detection/SettingsWindow';
 import { useDetection } from '../hooks/useDetection';
 import type { DetectionResponse } from '../types/detection';
 import { AlertCircle } from 'lucide-react';
 
 interface DetectionPageProps {
-  isSettingsOpen: boolean;
-  onCloseSettings: () => void;
   confThreshold: number;
-  onConfThresholdChange: (newVal: number) => void;
   maxThreshold: number;
-  onMaxThresholdChange: (newVal: number) => void;
+  soundEnabled: boolean;
+  soundPitch: number;
 }
 
 export const DetectionPage: React.FC<DetectionPageProps> = ({
-  isSettingsOpen,
-  onCloseSettings,
   confThreshold,
-  onConfThresholdChange,
-  maxThreshold,
-  onMaxThresholdChange
+  maxThreshold
 }) => {
   const { result: httpResult, isLoading, error, processFile, processBase64 } = useDetection();
   const [streamResult, setStreamResult] = useState<DetectionResponse | null>(null);
@@ -63,7 +56,7 @@ export const DetectionPage: React.FC<DetectionPageProps> = ({
   };
 
   return (
-    <div style={{ padding: '8px 8px 50px 8px', display: 'grid', gridTemplateColumns: '1fr 360px', gap: '8px' }}>
+    <div style={{ padding: '0 8px 50px 8px', display: 'grid', gridTemplateColumns: '1fr 360px', gap: '8px' }}>
       {/* Left Column: Visual Monitor Display & Telemetry Stats */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
         {error && (
@@ -110,16 +103,6 @@ export const DetectionPage: React.FC<DetectionPageProps> = ({
           maxThreshold={maxThreshold}
         />
       </div>
-
-      {/* Separated Settings Window (Opened via Control Panel button or Taskbar) */}
-      <SettingsWindow
-        isOpen={isSettingsOpen}
-        onClose={onCloseSettings}
-        confThreshold={confThreshold}
-        onConfThresholdChange={onConfThresholdChange}
-        maxThreshold={maxThreshold}
-        onMaxThresholdChange={onMaxThresholdChange}
-      />
     </div>
   );
 };
