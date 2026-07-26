@@ -1,25 +1,50 @@
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+let resolvedBaseUrl: string | null = null;
+
+export async function getApiBaseUrl(): Promise<string> {
+  if (resolvedBaseUrl) return resolvedBaseUrl;
+
+  const envUrl = import.meta.env.VITE_API_BASE_URL;
+  const candidates = envUrl ? [envUrl, 'http://localhost:8000', 'http://localhost:8001'] : ['http://localhost:8000', 'http://localhost:8001'];
+
+  for (const baseUrl of candidates) {
+    try {
+      const res = await fetch(`${baseUrl}/health`, { method: 'GET', signal: AbortSignal.timeout(1500) });
+      if (res.ok) {
+        resolvedBaseUrl = baseUrl;
+        return baseUrl;
+      }
+    } catch {}
+  }
+
+  // Default fallback
+  resolvedBaseUrl = envUrl || 'http://localhost:8000';
+  return resolvedBaseUrl;
+}
 
 export async function apiClient<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const url = `${BASE_URL}${endpoint}`;
-  const response = await fetch(url, options);
+  const baseUrl = await getApiBaseUrl();
+  const url = `${baseUrl}${endpoint}`;
 
-  if (!response.ok) {
-    let errorMessage = `HTTP Error ${response.status}: ${response.statusText}`;
-    try {
-      const errJson = await response.json();
-      if (errJson.detail) errorMessage = errJson.detail;
-    } catch {
-      // Use fallback error message if JSON parsing fails
+  try {
+    const response = await fetch(url, options);
+    if (!response.ok) {
+      let errorMessage = `HTTP Error ${response.status}: ${response.statusText}`;
+      try {
+        const errJson = await response.json();
+        if (errJson.detail) errorMessage = errJson.detail;
+      } catch {}
+      throw new Error(errorMessage);
     }
-    throw new Error(errorMessage);
-  }
 
-  // Handle blob or text responses if needed
-  const contentType = response.headers.get('content-type');
-  if (contentType && contentType.includes('text/csv')) {
-    return (await response.text()) as unknown as T;
-  }
+    const contentType = response.headers.get('content-type');
+    if (contentType && contentType.includes('text/csv')) {
+      return (await response.text()) as unknown as T;
+    }
 
-  return response.json();
+    return response.json();
+  } catch (err: any) {
+    // If request failed, reset resolvedBaseUrl so it re-probes
+    resolvedBaseUrl = null;
+    throw err;
+  }
 }
