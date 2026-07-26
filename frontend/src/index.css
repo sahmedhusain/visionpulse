@@ -59,6 +59,26 @@ body {
   border-right: 2px solid var(--win-white);
   border-bottom: 2px solid var(--win-white);
   box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.8);
+  min-height: 440px;
+}
+
+/* Responsive Media Queries for Large Screens */
+@media (min-width: 1200px) {
+  .win-screen-inset {
+    min-height: 520px !important;
+  }
+  .rpd-stream-img {
+    max-height: 600px !important;
+  }
+}
+
+@media (min-width: 1600px) {
+  .win-screen-inset {
+    min-height: 620px !important;
+  }
+  .rpd-stream-img {
+    max-height: 720px !important;
+  }
 }
 
 /* Win98 Window Frame */

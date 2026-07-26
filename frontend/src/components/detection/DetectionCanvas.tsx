@@ -119,6 +119,7 @@ export const DetectionCanvas: React.FC<DetectionCanvasProps> = ({
             <img
               src={displaySrc}
               alt="RPD Visual Stream"
+              className="rpd-stream-img"
               style={{
                 maxWidth: '100%',
                 maxHeight: isFullscreen ? '95vh' : '520px',

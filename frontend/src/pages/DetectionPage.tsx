@@ -3,6 +3,7 @@ import { DetectionCanvas } from '../components/detection/DetectionCanvas';
 import { StatsPanel } from '../components/detection/StatsPanel';
 import { InputSourcesWindow } from '../components/detection/InputSourcesWindow';
 import { AnalyticsWindow } from '../components/detection/AnalyticsWindow';
+import { MiniWidgets } from '../components/detection/MiniWidgets';
 import { useDetection } from '../hooks/useDetection';
 import type { DetectionResponse } from '../types/detection';
 import { AlertCircle } from 'lucide-react';
@@ -57,7 +58,7 @@ export const DetectionPage: React.FC<DetectionPageProps> = ({
 
   return (
     <div style={{ padding: '0 8px 50px 8px', display: 'grid', gridTemplateColumns: '1fr 360px', gap: '8px' }}>
-      {/* Left Column: Visual Monitor Display & Telemetry Stats */}
+      {/* Left Column: Visual Monitor Display, Mini Widgets & Telemetry Stats */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
         {error && (
           <div className="win-inset" style={{ background: '#ffc0c0', padding: '6px 10px', color: '#800000', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 'bold' }}>
@@ -65,7 +66,16 @@ export const DetectionPage: React.FC<DetectionPageProps> = ({
           </div>
         )}
 
-        {/* Visual Stream Canvas Monitor (With Fullscreen Button) */}
+        {/* Compact Retro Analysis Mini Widgets */}
+        <MiniWidgets
+          count={activeResult?.count || 0}
+          avgConfidence={activeResult?.avg_confidence || 0}
+          inferenceTimeMs={activeResult?.inference_time_ms || 0}
+          detections={activeResult?.detections || []}
+          maxThreshold={maxThreshold}
+        />
+
+        {/* Visual Stream Canvas Monitor (With Fullscreen Button & Media Query Scaling) */}
         <DetectionCanvas
           processedImage={activeResult?.processed_image}
           rawImageSrc={rawImageSrc}
