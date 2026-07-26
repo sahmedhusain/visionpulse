@@ -1,7 +1,7 @@
 import os
 
 class Settings:
-    PROJECT_NAME: str = "Detecto API"
+    PROJECT_NAME: str = "RPD API"
     VERSION: str = "1.0.0"
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./detecto.db")
     MODEL_NAME: str = os.getenv("MODEL_NAME", "yolov8n.pt")
