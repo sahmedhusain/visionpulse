@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { DetectionPage } from './pages/DetectionPage';
 import { HistoryPage } from './pages/HistoryPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { WinTopBar } from './components/win98/WinTopBar';
 import { WinTaskbar } from './components/win98/WinTaskbar';
 
 const SETTINGS_KEY = 'rpd_user_settings';
@@ -75,7 +76,14 @@ export const App: React.FC = () => {
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#008080', paddingBottom: '48px' }}>
-      <main style={{ flex: 1, paddingTop: '8px' }}>
+      {/* Top Window Bar with RPD Logo & Window Tabs */}
+      <WinTopBar
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        isBackendHealthy={isBackendHealthy}
+      />
+
+      <main style={{ flex: 1, paddingTop: '4px' }}>
         {activeTab === 'detection' && (
           <DetectionPage
             confThreshold={settings.confThreshold}
@@ -101,7 +109,7 @@ export const App: React.FC = () => {
         )}
       </main>
 
-      {/* Enlarged 44px Win98 Desktop Taskbar Footer */}
+      {/* Win98 Taskbar Footer with Start Button */}
       <WinTaskbar
         activeTab={activeTab}
         onTabChange={setActiveTab}

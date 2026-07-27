@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShieldCheck, Monitor, History, Volume2, Sliders } from 'lucide-react';
+import { ShieldCheck, Monitor, History, Volume2, Sliders, Activity } from 'lucide-react';
 
 interface WinTaskbarProps {
   activeTab: 'detection' | 'history' | 'settings';
@@ -69,7 +69,7 @@ export const WinTaskbar: React.FC<WinTaskbarProps> = ({
         </div>
       )}
 
-      {/* Main Win98 Bottom Taskbar (Enlarged 44px Height) */}
+      {/* Main Win98 Bottom Taskbar (Footer) */}
       <div
         className="win-outdent"
         style={{
@@ -86,14 +86,14 @@ export const WinTaskbar: React.FC<WinTaskbarProps> = ({
           background: '#c0c0c0'
         }}
       >
-        {/* Left: Start Button & Active Page Tabs */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+        {/* Left: Start Button */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <button
             className={`win-btn ${isStartOpen ? 'win-btn-active' : ''}`}
             onClick={() => setIsStartOpen(!isStartOpen)}
             style={{
               fontWeight: 'bold',
-              padding: '4px 12px',
+              padding: '4px 14px',
               height: '34px',
               fontSize: '13px',
               display: 'flex',
@@ -106,31 +106,13 @@ export const WinTaskbar: React.FC<WinTaskbarProps> = ({
             <span>Start</span>
           </button>
 
-          <div style={{ height: '28px', width: '2px', borderLeft: '1px solid #808080', borderRight: '1px solid #fff', margin: '0 4px' }} />
+          <div style={{ height: '28px', width: '2px', borderLeft: '1px solid #808080', borderRight: '1px solid #fff' }} />
 
-          <button
-            className={`win-btn ${activeTab === 'detection' ? 'win-btn-active' : ''}`}
-            onClick={() => onTabChange('detection')}
-            style={{ height: '34px', padding: '4px 12px', fontSize: '12px' }}
-          >
-            <Monitor size={14} /> RPD Monitor Display
-          </button>
-
-          <button
-            className={`win-btn ${activeTab === 'history' ? 'win-btn-active' : ''}`}
-            onClick={() => onTabChange('history')}
-            style={{ height: '34px', padding: '4px 12px', fontSize: '12px' }}
-          >
-            <History size={14} /> RPD History Log
-          </button>
-
-          <button
-            className={`win-btn ${activeTab === 'settings' ? 'win-btn-active' : ''}`}
-            onClick={() => onTabChange('settings')}
-            style={{ height: '34px', padding: '4px 12px', fontSize: '12px', color: '#000080', fontWeight: 'bold' }}
-          >
-            <Sliders size={14} /> Control Panel Settings
-          </button>
+          {/* Active Window Indicator */}
+          <div className="win-inset" style={{ padding: '4px 10px', fontSize: '11px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '6px', background: '#ffffff' }}>
+            <Activity size={13} color="#000080" />
+            <span>Active Window: {activeTab === 'detection' ? 'RPD Monitor Display' : activeTab === 'history' ? 'RPD History Log' : 'Control Panel Settings'}</span>
+          </div>
         </div>
 
         {/* Right: System Tray & Clock */}
