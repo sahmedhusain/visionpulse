@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import type { HistoryRecord } from '../../types/history';
 import { WinWindow } from '../win98/WinWindow';
 import { TrendingUp, BarChart2, PieChart } from 'lucide-react';
@@ -8,14 +8,41 @@ interface HistorySvgAnalyticsChartsProps {
 }
 
 export const HistorySvgAnalyticsCharts: React.FC<HistorySvgAnalyticsChartsProps> = ({ records }) => {
+  const containerRef1 = useRef<HTMLDivElement>(null);
+  const containerRef2 = useRef<HTMLDivElement>(null);
+
+  const [width1, setWidth1] = useState<number>(800);
+  const [width2, setWidth2] = useState<number>(500);
+
+  useEffect(() => {
+    if (!containerRef1.current) return;
+    const observer1 = new ResizeObserver(entries => {
+      if (entries[0] && entries[0].contentRect.width > 0) {
+        setWidth1(Math.round(entries[0].contentRect.width));
+      }
+    });
+    observer1.observe(containerRef1.current);
+    return () => observer1.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!containerRef2.current) return;
+    const observer2 = new ResizeObserver(entries => {
+      if (entries[0] && entries[0].contentRect.width > 0) {
+        setWidth2(Math.round(entries[0].contentRect.width));
+      }
+    });
+    observer2.observe(containerRef2.current);
+    return () => observer2.disconnect();
+  }, []);
+
   if (!records || records.length === 0) return null;
 
   // Chronological order (left to right)
   const chronoRecords = [...records].reverse();
 
-  // --- Graph 1: Timeline Occupancy Trend (Stretched Edge-to-Edge) ---
-  const width = 1000;
-  const height = 180;
+  // --- Graph 1: Dynamic Responsive High-Res PerfMon Occupancy Trend ---
+  const height1 = 180;
   const paddingLeft = 35;
   const paddingBottom = 28;
   const paddingTop = 16;
@@ -25,8 +52,8 @@ export const HistorySvgAnalyticsCharts: React.FC<HistorySvgAnalyticsChartsProps>
   const yTicks = [0, Math.round(maxCount / 2), maxCount];
 
   const points = chronoRecords.map((r, index) => {
-    const x = paddingLeft + (index / Math.max(1, chronoRecords.length - 1)) * (width - paddingLeft - paddingRight);
-    const y = height - paddingBottom - (r.count / maxCount) * (height - paddingTop - paddingBottom);
+    const x = paddingLeft + (index / Math.max(1, chronoRecords.length - 1)) * (width1 - paddingLeft - paddingRight);
+    const y = height1 - paddingBottom - (r.count / maxCount) * (height1 - paddingTop - paddingBottom);
     const timeStr = new Date(r.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     return { x, y, count: r.count, timeStr };
   });
@@ -35,7 +62,8 @@ export const HistorySvgAnalyticsCharts: React.FC<HistorySvgAnalyticsChartsProps>
     ? `M ${points[0].x} ${points[0].y} ` + points.slice(1).map(p => `L ${p.x} ${p.y}`).join(' ')
     : '';
 
-  // --- Graph 2: 24-Hour Traffic Bar Chart (Stretched Edge-to-Edge) ---
+  // --- Graph 2: Dynamic Responsive High-Res 24-Hour Traffic Bar Chart ---
+  const height2 = 160;
   const hourCounts: number[] = new Array(24).fill(0);
   const hourTotalScans: number[] = new Array(24).fill(0);
 
@@ -49,9 +77,9 @@ export const HistorySvgAnalyticsCharts: React.FC<HistorySvgAnalyticsChartsProps>
   const maxHourAvg = Math.max(...hourAverages, 1);
 
   const histLeft = 25;
-  const histRight = 975;
-  const barWidth = 30;
+  const histRight = Math.max(200, width2 - 15);
   const stepX = (histRight - histLeft) / 24;
+  const barWidth = Math.max(8, Math.min(36, stepX * 0.7));
 
   // --- Graph 3: Risk Level Donut Chart ---
   const lowCount = records.filter(r => r.count <= 3).length;
@@ -70,19 +98,19 @@ export const HistorySvgAnalyticsCharts: React.FC<HistorySvgAnalyticsChartsProps>
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '8px' }}>
-      {/* 1. Large Classic Win98 PerfMon Style Occupancy Trend Chart (Stretches Full Width) */}
+      {/* 1. Dynamic Responsive PerfMon Occupancy Trend Chart (High-Res) */}
       <WinWindow title="RPD Occupancy Telemetry Monitor (PerfMon Style)" icon={<TrendingUp size={14} />}>
-        <div className="win-inset" style={{ padding: '6px 4px', background: '#ffffff' }}>
-          <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" style={{ width: '100%', height: '180px', display: 'block' }}>
+        <div ref={containerRef1} className="win-inset" style={{ padding: '6px 4px', background: '#ffffff', width: '100%', boxSizing: 'border-box' }}>
+          <svg viewBox={`0 0 ${width1} ${height1}`} style={{ width: '100%', height: '180px', display: 'block' }}>
             {/* Grid lines */}
-            <line x1={paddingLeft} y1={paddingTop} x2={width - paddingRight} y2={paddingTop} stroke="#e0e0e0" strokeDasharray="4 4" />
-            <line x1={paddingLeft} y1={height / 2} x2={width - paddingRight} y2={height / 2} stroke="#e0e0e0" strokeDasharray="4 4" />
-            <line x1={paddingLeft} y1={height - paddingBottom} x2={width - paddingRight} y2={height - paddingBottom} stroke="#808080" strokeWidth="1.5" />
-            <line x1={paddingLeft} y1={paddingTop} x2={paddingLeft} y2={height - paddingBottom} stroke="#808080" strokeWidth="1.5" />
+            <line x1={paddingLeft} y1={paddingTop} x2={width1 - paddingRight} y2={paddingTop} stroke="#e0e0e0" strokeDasharray="4 4" />
+            <line x1={paddingLeft} y1={height1 / 2} x2={width1 - paddingRight} y2={height1 / 2} stroke="#e0e0e0" strokeDasharray="4 4" />
+            <line x1={paddingLeft} y1={height1 - paddingBottom} x2={width1 - paddingRight} y2={height1 - paddingBottom} stroke="#808080" strokeWidth="1.5" />
+            <line x1={paddingLeft} y1={paddingTop} x2={paddingLeft} y2={height1 - paddingBottom} stroke="#808080" strokeWidth="1.5" />
 
             {/* Y-Axis Labels */}
             {yTicks.map((val, i) => {
-              const yPos = height - paddingBottom - (val / maxCount) * (height - paddingTop - paddingBottom);
+              const yPos = height1 - paddingBottom - (val / maxCount) * (height1 - paddingTop - paddingBottom);
               return (
                 <text key={i} x={paddingLeft - 6} y={yPos + 4} fill="#000000" fontSize="11" fontFamily="Tahoma, sans-serif" textAnchor="end" fontWeight="bold">
                   {val}
@@ -96,13 +124,13 @@ export const HistorySvgAnalyticsCharts: React.FC<HistorySvgAnalyticsChartsProps>
             {/* Data Points & Numbers */}
             {points.map((p, i) => (
               <g key={i}>
-                <circle cx={p.x} cy={p.y} r="4.5" fill="#000080" stroke="#ffffff" strokeWidth="1.5" />
-                {(i === 0 || i === points.length - 1 || i % Math.ceil(points.length / 10) === 0) && (
+                <circle cx={p.x} cy={p.y} r="4" fill="#000080" stroke="#ffffff" strokeWidth="1.5" />
+                {(i === 0 || i === points.length - 1 || i % Math.max(1, Math.ceil(points.length / 10)) === 0) && (
                   <>
                     <text x={p.x} y={p.y - 8} fill="#800000" fontSize="11" fontFamily="Tahoma, sans-serif" textAnchor="middle" fontWeight="bold">
                       {p.count}
                     </text>
-                    <text x={p.x} y={height - 8} fill="#606060" fontSize="10" fontFamily="Tahoma, sans-serif" textAnchor="middle">
+                    <text x={p.x} y={height1 - 8} fill="#606060" fontSize="10" fontFamily="Tahoma, sans-serif" textAnchor="middle">
                       {p.timeStr}
                     </text>
                   </>
@@ -115,10 +143,10 @@ export const HistorySvgAnalyticsCharts: React.FC<HistorySvgAnalyticsChartsProps>
 
       {/* 2. Side-by-Side 24-Hour Histogram & Donut Chart */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '8px' }}>
-        {/* 24-Hour Traffic Bar Histogram (Stretches Full Width) */}
+        {/* 24-Hour Traffic Bar Histogram (Dynamic High-Res) */}
         <WinWindow title="RPD 24-Hour Crowd Traffic Histogram" icon={<BarChart2 size={14} />}>
-          <div className="win-inset" style={{ padding: '6px 4px', background: '#ffffff' }}>
-            <svg viewBox="0 0 1000 160" preserveAspectRatio="none" style={{ width: '100%', height: '160px', display: 'block' }}>
+          <div ref={containerRef2} className="win-inset" style={{ padding: '6px 4px', background: '#ffffff', width: '100%', boxSizing: 'border-box' }}>
+            <svg viewBox={`0 0 ${width2} ${height2}`} style={{ width: '100%', height: '160px', display: 'block' }}>
               <line x1={histLeft} y1="20" x2={histRight} y2="20" stroke="#e0e0e0" strokeDasharray="4 4" />
               <line x1={histLeft} y1="70" x2={histRight} y2="70" stroke="#e0e0e0" strokeDasharray="4 4" />
               <line x1={histLeft} y1="120" x2={histRight} y2="120" stroke="#808080" strokeWidth="1.5" />
