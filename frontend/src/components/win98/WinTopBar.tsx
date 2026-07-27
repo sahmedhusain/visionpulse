@@ -1,16 +1,15 @@
 import React from 'react';
-import { Monitor, History, Sliders, Zap } from 'lucide-react';
+import { Monitor, History, Sliders } from 'lucide-react';
 
 interface WinTopBarProps {
   activeTab: 'detection' | 'history' | 'settings';
   onTabChange: (tab: 'detection' | 'history' | 'settings') => void;
-  isBackendHealthy: boolean;
+  isBackendHealthy?: boolean;
 }
 
 export const WinTopBar: React.FC<WinTopBarProps> = ({
   activeTab,
-  onTabChange,
-  isBackendHealthy
+  onTabChange
 }) => {
   return (
     <div style={{ padding: '6px 8px 0 8px' }}>
@@ -30,41 +29,31 @@ export const WinTopBar: React.FC<WinTopBarProps> = ({
         </div>
 
         {/* Top Window Tabs Navigation Bar */}
-        <div style={{ display: 'flex', gap: '6px', padding: '6px 8px', background: '#c0c0c0', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', gap: '6px', padding: '6px 8px', background: '#c0c0c0', alignItems: 'center' }}>
           {/* Main Navigation Window Tabs */}
-          <div style={{ display: 'flex', gap: '6px' }}>
-            <button
-              className={`win-btn ${activeTab === 'detection' ? 'win-btn-active' : ''}`}
-              onClick={() => onTabChange('detection')}
-              style={{ height: '32px', padding: '4px 14px', fontSize: '12px' }}
-            >
-              <Monitor size={15} /> RPD Monitor Display
-            </button>
+          <button
+            className={`win-btn ${activeTab === 'detection' ? 'win-btn-active' : ''}`}
+            onClick={() => onTabChange('detection')}
+            style={{ height: '32px', padding: '4px 14px', fontSize: '12px' }}
+          >
+            <Monitor size={15} /> RPD Monitor Display
+          </button>
 
-            <button
-              className={`win-btn ${activeTab === 'history' ? 'win-btn-active' : ''}`}
-              onClick={() => onTabChange('history')}
-              style={{ height: '32px', padding: '4px 14px', fontSize: '12px' }}
-            >
-              <History size={15} /> RPD History Log
-            </button>
+          <button
+            className={`win-btn ${activeTab === 'history' ? 'win-btn-active' : ''}`}
+            onClick={() => onTabChange('history')}
+            style={{ height: '32px', padding: '4px 14px', fontSize: '12px' }}
+          >
+            <History size={15} /> RPD History Log
+          </button>
 
-            <button
-              className={`win-btn ${activeTab === 'settings' ? 'win-btn-active' : ''}`}
-              onClick={() => onTabChange('settings')}
-              style={{ height: '32px', padding: '4px 14px', fontSize: '12px', color: '#000080', fontWeight: 'bold' }}
-            >
-              <Sliders size={15} /> Control Panel Settings
-            </button>
-          </div>
-
-          {/* Engine Status Health Indicator */}
-          <div className="win-inset" style={{ padding: '3px 10px', display: 'flex', alignItems: 'center', gap: '6px', background: '#ffffff' }}>
-            <Zap size={13} color={isBackendHealthy ? '#008000' : '#800000'} />
-            <span style={{ fontSize: '11px', fontWeight: 'bold', color: isBackendHealthy ? '#008000' : '#800000' }}>
-              {isBackendHealthy ? 'YOLO ENGINE ONLINE' : 'ENGINE OFFLINE'}
-            </span>
-          </div>
+          <button
+            className={`win-btn ${activeTab === 'settings' ? 'win-btn-active' : ''}`}
+            onClick={() => onTabChange('settings')}
+            style={{ height: '32px', padding: '4px 14px', fontSize: '12px', color: '#000080', fontWeight: 'bold' }}
+          >
+            <Sliders size={15} /> Control Panel Settings
+          </button>
         </div>
       </div>
     </div>
