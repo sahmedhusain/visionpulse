@@ -6,8 +6,6 @@ interface WinWindowProps {
   children: React.ReactNode;
   style?: React.CSSProperties;
   className?: string;
-  onMinimize?: () => void;
-  onMaximize?: () => void;
   onClose?: () => void;
   statusBarContent?: React.ReactNode;
 }
@@ -18,8 +16,6 @@ export const WinWindow: React.FC<WinWindowProps> = ({
   children,
   style,
   className = '',
-  onMinimize,
-  onMaximize,
   onClose,
   statusBarContent
 }) => {
@@ -27,15 +23,15 @@ export const WinWindow: React.FC<WinWindowProps> = ({
     <div className={`win-window ${className}`} style={{ ...style }}>
       {/* Title Bar */}
       <div className="win-title-bar">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
           {icon && <span style={{ display: 'flex', alignItems: 'center' }}>{icon}</span>}
           <span>{title}</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <button className="win-btn-control" onClick={onMinimize} title="Minimize">_</button>
-          <button className="win-btn-control" onClick={onMaximize} title="Maximize">🗖</button>
-          <button className="win-btn-control" onClick={onClose} title="Close" style={{ fontWeight: 'bold' }}>X</button>
-        </div>
+        {onClose && (
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <button className="win-btn-control" onClick={onClose} title="Close" style={{ fontWeight: 'bold' }}>X</button>
+          </div>
+        )}
       </div>
 
       {/* Window Body */}

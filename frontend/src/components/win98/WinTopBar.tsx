@@ -15,7 +15,7 @@ export const WinTopBar: React.FC<WinTopBarProps> = ({
   return (
     <div style={{ padding: '6px 8px 0 8px' }}>
       <div className="win-window" style={{ marginBottom: '4px' }}>
-        {/* Title Bar with RPD Logo */}
+        {/* Clean Title Bar with RPD Logo */}
         <div className="win-title-bar" style={{ height: '28px', padding: '2px 8px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <img
@@ -27,25 +27,10 @@ export const WinTopBar: React.FC<WinTopBarProps> = ({
               RPD - Real-Time Person Detection & Visual Analytics System v1.0
             </span>
           </div>
-          <div style={{ display: 'flex' }}>
-            <button className="win-btn-control">_</button>
-            <button className="win-btn-control">🗖</button>
-            <button className="win-btn-control">X</button>
-          </div>
-        </div>
-
-        {/* Win98 Classic Menu Bar */}
-        <div style={{ display: 'flex', gap: '14px', padding: '3px 10px', borderBottom: '1px solid #808080', fontSize: '11px', background: '#c0c0c0' }}>
-          <span style={{ cursor: 'pointer' }}><u>F</u>ile</span>
-          <span style={{ cursor: 'pointer' }}><u>E</u>dit</span>
-          <span style={{ cursor: 'pointer' }}><u>V</u>iew</span>
-          <span style={{ cursor: 'pointer' }}><u>S</u>ource</span>
-          <span style={{ cursor: 'pointer', fontWeight: 'bold' }} onClick={() => onTabChange('settings')}><u>O</u>ptions / Settings</span>
-          <span style={{ cursor: 'pointer' }}><u>H</u>elp</span>
         </div>
 
         {/* Top Window Tabs Navigation Bar */}
-        <div style={{ display: 'flex', gap: '6px', padding: '5px 8px', background: '#c0c0c0', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', gap: '6px', padding: '6px 8px', background: '#c0c0c0', alignItems: 'center', justifyContent: 'space-between' }}>
           {/* Main Navigation Window Tabs */}
           <div style={{ display: 'flex', gap: '6px' }}>
             <button
