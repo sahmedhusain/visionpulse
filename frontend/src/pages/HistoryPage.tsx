@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { HistoryTable } from '../components/history/HistoryTable';
 import { HistoryFilters } from '../components/history/HistoryFilters';
-import { HistoryChart } from '../components/history/HistoryChart';
 import { HistoryAnalyticsSummary } from '../components/history/HistoryAnalyticsSummary';
+import { HistorySvgAnalyticsCharts } from '../components/history/HistorySvgAnalyticsCharts';
 import { useHistory } from '../hooks/useHistory';
-import { Download, Trash2, TrendingUp, History, FileText, RefreshCw } from 'lucide-react';
+import { Download, Trash2, History, FileText, RefreshCw } from 'lucide-react';
 import { WinWindow } from '../components/win98/WinWindow';
 import type { HistoryFilters as FilterType } from '../types/history';
 
@@ -55,7 +55,10 @@ ${data.records.slice(0, 10).map(r => `[ID #${r.id}] ${r.timestamp} | Count: ${r.
       {/* 1. Executive Summary Telemetry Window */}
       <HistoryAnalyticsSummary records={data.records} total={data.total} />
 
-      {/* 2. Main History Database & Controls Window */}
+      {/* 2. Suite of 4 Retro SVG Analytics Graphs */}
+      <HistorySvgAnalyticsCharts records={data.records} />
+
+      {/* 3. Main History Database & Data Grid Window */}
       <WinWindow
         title={`RPD Detection Database & History Log (${data.total} Total Logged Entries)`}
         icon={<History size={14} />}
@@ -93,14 +96,6 @@ ${data.records.slice(0, 10).map(r => `[ID #${r.id}] ${r.timestamp} | Count: ${r.
             ✓ RPD Analytics Text Report downloaded successfully.
           </div>
         )}
-
-        {/* Analytics Chart Box */}
-        <div className="win-inset" style={{ padding: '8px', marginBottom: '8px', background: '#ffffff' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', marginBottom: '4px', fontWeight: 'bold', fontSize: '11px', color: '#000080' }}>
-            <TrendingUp size={14} /> RPD Crowd Density Trend Analytics Chart
-          </div>
-          <HistoryChart records={data.records} />
-        </div>
 
         {/* Filter Controls Window */}
         <HistoryFilters
