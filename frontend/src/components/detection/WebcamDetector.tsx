@@ -31,9 +31,9 @@ export const WebcamDetector: React.FC<WebcamDetectorProps> = ({
 
     if (streamMode === 'webcam') {
       try {
-        // Request browser camera hardware permission
+        // Request browser camera hardware permission in 1080p widescreen full resolution
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 640 }, height: { ideal: 480 } }
+          video: { width: { ideal: 1920 }, height: { ideal: 1080 } }
         });
         if (videoRef.current) {
           videoRef.current.srcObject = stream;

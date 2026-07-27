@@ -41,12 +41,12 @@ export const DetectionCanvas: React.FC<DetectionCanvasProps> = ({
 
   return (
     <WinWindow
-      title="RPD Monitor Display - Live Visual Feed"
+      title="RPD Monitor Display - Full Resolution Visual Stream Feed"
       icon={<Monitor size={14} />}
       statusBarContent={
         <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', fontSize: '11px', fontWeight: 'bold' }}>
           <span>Detections: {detections.length} Persons</span>
-          <span>Feed Status: {displaySrc ? 'Stream Active' : 'Standby'}</span>
+          <span>Feed Format: Native Stream Resolution (16:9 / Full Frame)</span>
           <span>Mode: {isLoading ? 'Processing...' : 'Active Stream'}</span>
         </div>
       }
@@ -57,12 +57,13 @@ export const DetectionCanvas: React.FC<DetectionCanvasProps> = ({
         style={{
           position: 'relative',
           width: '100%',
+          minHeight: isFullscreen ? '100vh' : '360px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
           background: '#04070a',
-          padding: isFullscreen ? '0' : '6px',
+          padding: isFullscreen ? '0' : '4px',
           overflow: 'hidden'
         }}
       >
@@ -112,24 +113,31 @@ export const DetectionCanvas: React.FC<DetectionCanvasProps> = ({
               }}
             />
             <p style={{ color: '#00ffff', fontFamily: 'monospace', fontSize: '14px', fontWeight: 'bold' }}>
-              [RPD AI] Running Neural Detection Inference...
+              [RPD AI] Running Full-Resolution Inference...
             </p>
           </div>
         )}
 
         {displaySrc ? (
-          <div className="rpd-stream-wrapper" style={{ position: 'relative', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div className="rpd-stream-wrapper" style={{ position: 'relative', width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <img
               src={displaySrc}
-              alt="RPD Visual Stream"
+              alt="RPD Full Resolution Visual Stream"
               className="rpd-stream-img"
+              style={{
+                width: '100%',
+                height: 'auto',
+                maxWidth: '100%',
+                maxHeight: isFullscreen ? '100vh' : '78vh',
+                objectFit: 'contain'
+              }}
             />
             {processedImage && detections.length > 0 && (
               <div
                 style={{
                   position: 'absolute',
-                  bottom: '16px',
-                  left: '16px',
+                  bottom: '14px',
+                  left: '14px',
                   background: 'rgba(0, 0, 0, 0.85)',
                   border: '1px solid #00ffff',
                   padding: '6px 12px',
@@ -149,8 +157,8 @@ export const DetectionCanvas: React.FC<DetectionCanvasProps> = ({
             )}
           </div>
         ) : (
-          <div style={{ textAlign: 'center', color: '#808080', padding: '6rem 2rem' }}>
-            <p style={{ fontFamily: 'monospace', fontSize: '16px', color: '#00ff00', fontWeight: 'bold' }}>[RPD MONITOR STANDBY]</p>
+          <div style={{ textAlign: 'center', color: '#808080', padding: '5rem 2rem' }}>
+            <p style={{ fontFamily: 'monospace', fontSize: '16px', color: '#00ff00', fontWeight: 'bold' }}>[RPD MONITOR STANDBY - NATIVE STREAM RESOLUTION]</p>
             <p style={{ fontSize: '13px', marginTop: '10px', color: '#b0b0b0' }}>Select an Input Source (Webcam, IP Camera, File Upload, or Demo Samples) on the right</p>
           </div>
         )}
