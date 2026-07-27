@@ -108,18 +108,16 @@ export const HistorySvgAnalyticsCharts: React.FC<HistorySvgAnalyticsChartsProps>
         </div>
       </WinWindow>
 
-      {/* 2. Side-by-Side Large 24-Hour Histogram & Donut Chart */}
+      {/* 2. Side-by-Side 24-Hour Histogram & Donut Chart */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '8px' }}>
         {/* 24-Hour Traffic Bar Histogram */}
         <WinWindow title="RPD 24-Hour Crowd Traffic Histogram" icon={<BarChart2 size={14} />}>
           <div className="win-inset" style={{ padding: '8px', background: '#ffffff', overflowX: 'auto' }}>
             <svg viewBox="0 0 500 160" style={{ width: '100%', minWidth: '400px', height: '160px', display: 'block' }}>
-              {/* Horizontal Axes */}
               <line x1="30" y1="20" x2="480" y2="20" stroke="#e0e0e0" strokeDasharray="3 3" />
               <line x1="30" y1="70" x2="480" y2="70" stroke="#e0e0e0" strokeDasharray="3 3" />
               <line x1="30" y1="120" x2="480" y2="120" stroke="#808080" strokeWidth="1.5" />
 
-              {/* 24 Hourly Bars */}
               {hourAverages.map((avg, h) => {
                 const barHeight = (avg / maxHourAvg) * 95;
                 const x = 35 + h * 18.5;
@@ -152,7 +150,6 @@ export const HistorySvgAnalyticsCharts: React.FC<HistorySvgAnalyticsChartsProps>
             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
               <svg viewBox="0 0 120 120" style={{ width: '100px', height: '100px' }}>
                 <circle cx="60" cy="60" r="45" fill="transparent" stroke="#e0e0e0" strokeWidth="18" />
-                {/* Normal Segment (Green) */}
                 <circle
                   cx="60"
                   cy="60"
@@ -164,7 +161,6 @@ export const HistorySvgAnalyticsCharts: React.FC<HistorySvgAnalyticsChartsProps>
                   strokeDashoffset="0"
                   transform="rotate(-90 60 60)"
                 />
-                {/* Moderate Segment (Orange) */}
                 <circle
                   cx="60"
                   cy="60"
@@ -176,7 +172,6 @@ export const HistorySvgAnalyticsCharts: React.FC<HistorySvgAnalyticsChartsProps>
                   strokeDashoffset={`-${lowStroke}`}
                   transform="rotate(-90 60 60)"
                 />
-                {/* High Segment (Red) */}
                 <circle
                   cx="60"
                   cy="60"
@@ -193,7 +188,6 @@ export const HistorySvgAnalyticsCharts: React.FC<HistorySvgAnalyticsChartsProps>
                 </text>
               </svg>
 
-              {/* Legends */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '11px', fontWeight: 'bold' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <div style={{ width: '14px', height: '14px', background: '#008000', border: '1px solid #000' }} />
