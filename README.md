@@ -23,6 +23,117 @@ RPD solves this by delivering:
 
 ---
 
+## 📐 System Architecture & Workflow Diagrams
+
+### 1. Overall System Architecture & Data Flow Diagram
+
+```mermaid
+graph TD
+    subgraph Client["Frontend - React + TypeScript (Win98 Desktop)"]
+        UI["App Dashboard / Tabs"]
+        InpMgr["Input Sources Manager"]
+        Canvas["Visual Stream Monitor Display"]
+        Telem["Advanced Telemetry & Mini Widgets"]
+        Synth["Web Audio Alert Synthesizer"]
+        HistUI["History Analytics & SVG Charts"]
+        Settings["Control Panel Settings Page"]
+    end
+
+    subgraph DataSources["Input Sources"]
+        Cam["Hardware Webcam (1080p Widescreen)"]
+        IPCam["IP / RTSP / NDI Camera Stream"]
+        Upload["File Upload Dropzone"]
+        Demos["10 Demo Benchmark Samples"]
+    end
+
+    subgraph Backend["Backend Server - FastAPI (Python)"]
+        Router["FastAPI API Routers"]
+        WS["WebSocket Streaming Server"]
+        Pre["Preprocessor (OpenCV / Base64)"]
+        YOLO["YOLOv8 Object Detection Engine"]
+        Overlay["Bounding Box Annotation Overlay"]
+        HistService["History Service & CSV Exporter"]
+        DB[(SQLite detecto.db)]
+    end
+
+    DataSources --> InpMgr
+    InpMgr -->|Frame / Media Payload| Router
+    InpMgr -->|Live Stream Packets| WS
+    Router --> Pre
+    WS --> Pre
+    Pre --> YOLO
+    YOLO --> Overlay
+    Overlay -->|Annotated Frame + Detections JSON| Router
+    Overlay -->|Annotated Frame + Detections JSON| WS
+    YOLO -->|Save Detection Record| HistService
+    HistService --> DB
+    Router -->|HTTP JSON Response| Canvas
+    WS -->|WebSocket Push Payload| Canvas
+    Canvas --> Telem
+    Telem -->|Check Max Occupancy Limit| Synth
+    DB -->|Retrieve Historical Logs| HistUI
+    Settings -->|Persist Preferences| Client
+```
+
+---
+
+### 2. Backend Neural Inference Pipeline & Execution Logic
+
+```mermaid
+flowchart TD
+    Start(["Incoming Detection Request / Video Frame"]) --> Decode["1. Preprocess & Decode Image (OpenCV)"]
+    Decode --> AspectCheck["2. Native Aspect Ratio & Resolution Check"]
+    AspectCheck --> ModelCheck{"3. YOLOv8 Deep Learning Engine Active?"}
+    
+    ModelCheck -- Yes --> YOLOInference["Run YOLOv8 Person Inference (COCO Class 0)"]
+    ModelCheck -- No --> FallbackInference["Run Fallback OpenCV DNN Detector"]
+    
+    YOLOInference --> FilterConf["4. Filter Bounding Boxes (conf >= threshold)"]
+    FallbackInference --> FilterConf
+    
+    FilterConf --> ExtractCoords["5. Extract Person Bounding Box Coordinates & Count"]
+    ExtractCoords --> RenderOverlay["6. Render Bounding Boxes & Confidence Labels"]
+    
+    RenderOverlay --> SaveDB["7. Log Detection Record to SQLite Database (detecto.db)"]
+    SaveDB --> FormatResp["8. Assemble JSON Response Payload"]
+    FormatResp --> ReturnClient(["Return Base64 Annotated Image + Detections JSON"])
+```
+
+---
+
+### 3. Frontend Window State Machine & LocalStorage Sync Flow
+
+```mermaid
+stateDiagram-v2
+    [*] --> DetectionMonitor: Launch RPD Application
+    
+    state DetectionMonitor {
+        [*] --> VisualFeed
+        VisualFeed --> InputManager: Select Webcam / IP Stream / Upload / Demos
+        VisualFeed --> TelemetryGauge: Calculate Crowd Density %
+        TelemetryGauge --> AudioAlarm: Exceeds Max Limit (> Limit)
+    }
+
+    state HistoryAnalytics {
+        [*] --> ExecutiveSummary
+        ExecutiveSummary --> PerfMonCharts: Render Dynamic High-Res SVG Vector Graphs
+        PerfMonCharts --> HistoryDataGrid: Search & Filter Log Entries
+        HistoryDataGrid --> ExportReport: Download Text / CSV Reports
+    }
+
+    state ControlPanelSettings {
+        [*] --> ConfigureThresholds
+        ConfigureThresholds --> TestSoundBeep: Test Web Audio Synthesizer Beep
+        ConfigureThresholds --> SaveLocalStorage: Persist in browser localStorage
+    }
+
+    DetectionMonitor --> HistoryAnalytics: Click "RPD History Log" Tab
+    HistoryAnalytics --> ControlPanelSettings: Click "Control Panel Settings" Tab
+    ControlPanelSettings --> DetectionMonitor: Click "RPD Monitor Display" Tab
+```
+
+---
+
 ## 🌟 System Features & Capabilities
 
 ### 👁️ Core Computer Vision & Ingestion
