@@ -189,40 +189,40 @@ export const InputSourcesWindow: React.FC<InputSourcesWindowProps> = ({
   return (
     <WinWindow title="RPD Input Source Manager" icon={<Video size={14} />}>
       {/* Input Source Selector Tabs */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '4px', marginBottom: '10px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '4px', marginBottom: '12px' }}>
         <button
           className={`win-btn ${activeTab === 'webcam' ? 'win-btn-active' : ''}`}
           onClick={() => handleTabChange('webcam')}
-          style={{ fontSize: '11px', padding: '4px 6px', justifyContent: 'center' }}
+          style={{ fontSize: '11px', padding: '6px 8px', justifyContent: 'center' }}
         >
-          <Camera size={12} /> Webcam
+          <Camera size={13} /> Webcam
         </button>
         <button
           className={`win-btn ${activeTab === 'ipcam' ? 'win-btn-active' : ''}`}
           onClick={() => handleTabChange('ipcam')}
-          style={{ fontSize: '11px', padding: '4px 6px', justifyContent: 'center' }}
+          style={{ fontSize: '11px', padding: '6px 8px', justifyContent: 'center' }}
         >
-          <Globe size={12} /> IP Cam
+          <Globe size={13} /> IP Cam
         </button>
         <button
           className={`win-btn ${activeTab === 'upload' ? 'win-btn-active' : ''}`}
           onClick={() => handleTabChange('upload')}
-          style={{ fontSize: '11px', padding: '4px 6px', justifyContent: 'center' }}
+          style={{ fontSize: '11px', padding: '6px 8px', justifyContent: 'center' }}
         >
-          <Folder size={12} /> Upload
+          <Folder size={13} /> Upload
         </button>
         <button
           className={`win-btn ${activeTab === 'samples' ? 'win-btn-active' : ''}`}
           onClick={() => handleTabChange('samples')}
-          style={{ fontSize: '11px', padding: '4px 6px', justifyContent: 'center' }}
+          style={{ fontSize: '11px', padding: '6px 8px', justifyContent: 'center' }}
         >
-          <Layers size={12} /> Samples
+          <Layers size={13} /> Samples
         </button>
       </div>
 
       {/* Tab 1 & 2: Live Video Stream Controls */}
       {(activeTab === 'webcam' || activeTab === 'ipcam') && (
-        <div style={{ padding: '4px 0' }}>
+        <div style={{ padding: '8px 0', minHeight: '130px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           {activeTab === 'ipcam' && (
             <div style={{ marginBottom: '10px' }}>
               <label style={{ fontSize: '11px', display: 'block', marginBottom: '4px', fontWeight: 'bold' }}>
@@ -240,11 +240,11 @@ export const InputSourcesWindow: React.FC<InputSourcesWindowProps> = ({
             </div>
           )}
 
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div>
               {isStreaming ? (
                 <span style={{ color: '#008000', fontWeight: 'bold', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <Radio size={12} /> STREAM ACTIVE ({fps} FPS)
+                  <Radio size={13} /> STREAM ACTIVE ({fps} FPS)
                 </span>
               ) : (
                 <span style={{ color: '#808080', fontSize: '11px' }}>Stream Offline</span>
@@ -252,11 +252,11 @@ export const InputSourcesWindow: React.FC<InputSourcesWindowProps> = ({
             </div>
 
             {!isStreaming ? (
-              <button className="win-btn" onClick={startStream}>
-                <Camera size={13} /> Start Stream
+              <button className="win-btn" onClick={startStream} style={{ padding: '6px 14px' }}>
+                <Camera size={14} /> Start Stream
               </button>
             ) : (
-              <button className="win-btn win-btn-danger" onClick={stopWebcam}>
+              <button className="win-btn win-btn-danger" onClick={stopWebcam} style={{ padding: '6px 14px' }}>
                 Stop Stream
               </button>
             )}
@@ -264,7 +264,7 @@ export const InputSourcesWindow: React.FC<InputSourcesWindowProps> = ({
         </div>
       )}
 
-      {/* Tab 3: File Upload Dropzone */}
+      {/* Tab 3: File Upload Dropzone (Increased Height) */}
       {activeTab === 'upload' && (
         <div
           className="win-inset"
@@ -272,12 +272,14 @@ export const InputSourcesWindow: React.FC<InputSourcesWindowProps> = ({
           onDrop={handleDrop}
           onClick={() => fileInputRef.current?.click()}
           style={{
-            padding: '24px 16px',
+            padding: '32px 16px',
+            minHeight: '140px',
             textAlign: 'center',
             cursor: isLoading ? 'not-allowed' : 'pointer',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
+            justifyContent: 'center',
             gap: '8px',
             background: '#ffffff'
           }}
@@ -290,7 +292,7 @@ export const InputSourcesWindow: React.FC<InputSourcesWindowProps> = ({
             style={{ display: 'none' }}
             disabled={isLoading}
           />
-          <UploadCloud size={28} color="#000080" />
+          <UploadCloud size={32} color="#000080" />
           <p style={{ fontWeight: 'bold', fontSize: '12px', margin: 0 }}>
             Drag & Drop image file or <span style={{ color: '#000080', textDecoration: 'underline' }}>Browse...</span>
           </p>
@@ -298,7 +300,7 @@ export const InputSourcesWindow: React.FC<InputSourcesWindowProps> = ({
         </div>
       )}
 
-      {/* Tab 4: Demo Sample Benchmark Gallery */}
+      {/* Tab 4: Demo Sample Benchmark Gallery (Increased Thumbnail Heights to 76px) */}
       {activeTab === 'samples' && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '6px' }}>
           {SAMPLE_IMAGES.map((sample) => {
@@ -319,9 +321,9 @@ export const InputSourcesWindow: React.FC<InputSourcesWindowProps> = ({
                 <img
                   src={url}
                   alt={sample.label}
-                  style={{ width: '100%', height: '52px', objectFit: 'cover', display: 'block' }}
+                  style={{ width: '100%', height: '76px', objectFit: 'cover', display: 'block' }}
                 />
-                <div style={{ fontSize: '9px', fontWeight: 'bold', padding: '3px 0' }}>
+                <div style={{ fontSize: '9px', fontWeight: 'bold', padding: '4px 0' }}>
                   {sample.label}
                 </div>
               </div>

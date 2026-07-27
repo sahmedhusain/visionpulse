@@ -51,7 +51,7 @@ body {
   box-shadow: inset 1px 1px 0 var(--win-black), inset -1px -1px 0 var(--win-bg-light);
 }
 
-/* Dark Screen Inset (For Video Stream / Canvas) */
+/* Dark Screen Inset (For Video Stream / Canvas Monitor) */
 .win-screen-inset {
   background: #04070a;
   border-top: 2px solid var(--win-bg-dark);
@@ -59,25 +59,29 @@ body {
   border-right: 2px solid var(--win-white);
   border-bottom: 2px solid var(--win-white);
   box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.8);
-  min-height: 440px;
+  min-height: 540px;
+}
+
+.rpd-stream-img {
+  max-height: 580px !important;
 }
 
 /* Responsive Media Queries for Large Screens */
 @media (min-width: 1200px) {
   .win-screen-inset {
-    min-height: 520px !important;
+    min-height: 620px !important;
   }
   .rpd-stream-img {
-    max-height: 600px !important;
+    max-height: 680px !important;
   }
 }
 
 @media (min-width: 1600px) {
   .win-screen-inset {
-    min-height: 620px !important;
+    min-height: 720px !important;
   }
   .rpd-stream-img {
-    max-height: 720px !important;
+    max-height: 800px !important;
   }
 }
 

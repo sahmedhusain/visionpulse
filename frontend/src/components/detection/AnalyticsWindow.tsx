@@ -74,17 +74,17 @@ export const AnalyticsWindow: React.FC<AnalyticsWindowProps> = ({
         </div>
       }
     >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        {/* Crowd Density Meter Bar */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', padding: '4px' }}>
+        {/* Crowd Density Meter Bar (Increased Height to 24px) */}
         <div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '3px', fontSize: '11px', fontWeight: 'bold' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px', fontSize: '11px', fontWeight: 'bold' }}>
             <span>Zone Occupancy Gauge:</span>
             <span style={{ color: occupancyPct >= 100 ? '#800000' : '#000080' }}>
               {occupancyPct}% ({count}/{maxThreshold} Limit)
             </span>
           </div>
 
-          <div className="win-inset" style={{ height: '18px', padding: '2px', background: '#e0e0e0', display: 'flex' }}>
+          <div className="win-inset" style={{ height: '24px', padding: '3px', background: '#e0e0e0', display: 'flex' }}>
             <div
               style={{
                 width: `${occupancyPct}%`,
@@ -97,26 +97,26 @@ export const AnalyticsWindow: React.FC<AnalyticsWindowProps> = ({
         </div>
 
         {/* Confidence Breakdown Grid */}
-        <div className="win-outdent" style={{ padding: '8px', background: '#c0c0c0' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 'bold', fontSize: '11px', marginBottom: '6px' }}>
-            <BarChart2 size={13} color="#000080" />
+        <div className="win-outdent" style={{ padding: '10px', background: '#c0c0c0' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontWeight: 'bold', fontSize: '11px', marginBottom: '8px', color: '#000080' }}>
+            <BarChart2 size={14} />
             <span>Detection Confidence Distribution</span>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px' }}>
-            <div className="win-inset" style={{ padding: '6px', textAlign: 'center', background: '#ffffff' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+            <div className="win-inset" style={{ padding: '8px', textAlign: 'center', background: '#ffffff' }}>
               <div style={{ fontSize: '10px', color: '#008000', fontWeight: 'bold' }}>HIGH (&gt;80%)</div>
-              <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#008000' }}>{highConf}</div>
+              <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#008000', marginTop: '2px' }}>{highConf}</div>
             </div>
 
-            <div className="win-inset" style={{ padding: '6px', textAlign: 'center', background: '#ffffff' }}>
+            <div className="win-inset" style={{ padding: '8px', textAlign: 'center', background: '#ffffff' }}>
               <div style={{ fontSize: '10px', color: '#ff8c00', fontWeight: 'bold' }}>MED (50-80%)</div>
-              <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#ff8c00' }}>{medConf}</div>
+              <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#ff8c00', marginTop: '2px' }}>{medConf}</div>
             </div>
 
-            <div className="win-inset" style={{ padding: '6px', textAlign: 'center', background: '#ffffff' }}>
+            <div className="win-inset" style={{ padding: '8px', textAlign: 'center', background: '#ffffff' }}>
               <div style={{ fontSize: '10px', color: '#800000', fontWeight: 'bold' }}>LOW (&lt;50%)</div>
-              <div style={{ fontSize: '16px', fontWeight: 'bold', color: '#800000' }}>{lowConf}</div>
+              <div style={{ fontSize: '18px', fontWeight: 'bold', color: '#800000', marginTop: '2px' }}>{lowConf}</div>
             </div>
           </div>
         </div>
@@ -131,9 +131,9 @@ export const AnalyticsWindow: React.FC<AnalyticsWindowProps> = ({
           <button
             className={`win-btn ${soundEnabled ? '' : 'win-btn-danger'}`}
             onClick={() => setSoundEnabled(!soundEnabled)}
-            style={{ padding: '4px 10px', fontSize: '11px' }}
+            style={{ padding: '5px 12px', fontSize: '11px' }}
           >
-            {soundEnabled ? <Volume2 size={13} /> : <VolumeX size={13} />}
+            {soundEnabled ? <Volume2 size={14} /> : <VolumeX size={14} />}
             <span>{soundEnabled ? 'Audio Beep ON' : 'Audio Beep OFF'}</span>
           </button>
         </div>
