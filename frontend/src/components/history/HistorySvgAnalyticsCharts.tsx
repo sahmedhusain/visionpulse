@@ -13,13 +13,13 @@ export const HistorySvgAnalyticsCharts: React.FC<HistorySvgAnalyticsChartsProps>
   // Chronological order (left to right)
   const chronoRecords = [...records].reverse();
 
-  // --- Graph 1: Timeline Occupancy Trend (Edge-to-Edge Inner Width) ---
-  const width = 800;
+  // --- Graph 1: Timeline Occupancy Trend (Stretched Edge-to-Edge) ---
+  const width = 1000;
   const height = 180;
-  const paddingLeft = 24;
+  const paddingLeft = 35;
   const paddingBottom = 28;
   const paddingTop = 16;
-  const paddingRight = 10;
+  const paddingRight = 15;
 
   const maxCount = Math.max(...chronoRecords.map(r => r.count), 5);
   const yTicks = [0, Math.round(maxCount / 2), maxCount];
@@ -35,7 +35,7 @@ export const HistorySvgAnalyticsCharts: React.FC<HistorySvgAnalyticsChartsProps>
     ? `M ${points[0].x} ${points[0].y} ` + points.slice(1).map(p => `L ${p.x} ${p.y}`).join(' ')
     : '';
 
-  // --- Graph 2: 24-Hour Traffic Bar Chart (Edge-to-Edge Histogram Inner Width) ---
+  // --- Graph 2: 24-Hour Traffic Bar Chart (Stretched Edge-to-Edge) ---
   const hourCounts: number[] = new Array(24).fill(0);
   const hourTotalScans: number[] = new Array(24).fill(0);
 
@@ -48,9 +48,9 @@ export const HistorySvgAnalyticsCharts: React.FC<HistorySvgAnalyticsChartsProps>
   const hourAverages = hourCounts.map((tot, h) => hourTotalScans[h] > 0 ? tot / hourTotalScans[h] : 0);
   const maxHourAvg = Math.max(...hourAverages, 1);
 
-  const histLeft = 16;
-  const histRight = 484;
-  const barWidth = 16;
+  const histLeft = 25;
+  const histRight = 975;
+  const barWidth = 30;
   const stepX = (histRight - histLeft) / 24;
 
   // --- Graph 3: Risk Level Donut Chart ---
@@ -70,13 +70,13 @@ export const HistorySvgAnalyticsCharts: React.FC<HistorySvgAnalyticsChartsProps>
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '8px' }}>
-      {/* 1. Large Classic Win98 PerfMon Style Occupancy Trend Chart (Edge-to-Edge Diagram Width) */}
+      {/* 1. Large Classic Win98 PerfMon Style Occupancy Trend Chart (Stretches Full Width) */}
       <WinWindow title="RPD Occupancy Telemetry Monitor (PerfMon Style)" icon={<TrendingUp size={14} />}>
-        <div className="win-inset" style={{ padding: '6px 4px', background: '#ffffff', overflowX: 'auto' }}>
-          <svg viewBox={`0 0 ${width} ${height}`} style={{ width: '100%', minWidth: '600px', height: '180px', display: 'block' }}>
+        <div className="win-inset" style={{ padding: '6px 4px', background: '#ffffff' }}>
+          <svg viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" style={{ width: '100%', height: '180px', display: 'block' }}>
             {/* Grid lines */}
-            <line x1={paddingLeft} y1={paddingTop} x2={width - paddingRight} y2={paddingTop} stroke="#e0e0e0" strokeDasharray="3 3" />
-            <line x1={paddingLeft} y1={height / 2} x2={width - paddingRight} y2={height / 2} stroke="#e0e0e0" strokeDasharray="3 3" />
+            <line x1={paddingLeft} y1={paddingTop} x2={width - paddingRight} y2={paddingTop} stroke="#e0e0e0" strokeDasharray="4 4" />
+            <line x1={paddingLeft} y1={height / 2} x2={width - paddingRight} y2={height / 2} stroke="#e0e0e0" strokeDasharray="4 4" />
             <line x1={paddingLeft} y1={height - paddingBottom} x2={width - paddingRight} y2={height - paddingBottom} stroke="#808080" strokeWidth="1.5" />
             <line x1={paddingLeft} y1={paddingTop} x2={paddingLeft} y2={height - paddingBottom} stroke="#808080" strokeWidth="1.5" />
 
@@ -84,7 +84,7 @@ export const HistorySvgAnalyticsCharts: React.FC<HistorySvgAnalyticsChartsProps>
             {yTicks.map((val, i) => {
               const yPos = height - paddingBottom - (val / maxCount) * (height - paddingTop - paddingBottom);
               return (
-                <text key={i} x={paddingLeft - 4} y={yPos + 4} fill="#000000" fontSize="10" fontFamily="Tahoma, sans-serif" textAnchor="end" fontWeight="bold">
+                <text key={i} x={paddingLeft - 6} y={yPos + 4} fill="#000000" fontSize="11" fontFamily="Tahoma, sans-serif" textAnchor="end" fontWeight="bold">
                   {val}
                 </text>
               );
@@ -96,8 +96,8 @@ export const HistorySvgAnalyticsCharts: React.FC<HistorySvgAnalyticsChartsProps>
             {/* Data Points & Numbers */}
             {points.map((p, i) => (
               <g key={i}>
-                <circle cx={p.x} cy={p.y} r="4" fill="#000080" stroke="#ffffff" strokeWidth="1.5" />
-                {(i === 0 || i === points.length - 1 || i % Math.ceil(points.length / 8) === 0) && (
+                <circle cx={p.x} cy={p.y} r="4.5" fill="#000080" stroke="#ffffff" strokeWidth="1.5" />
+                {(i === 0 || i === points.length - 1 || i % Math.ceil(points.length / 10) === 0) && (
                   <>
                     <text x={p.x} y={p.y - 8} fill="#800000" fontSize="11" fontFamily="Tahoma, sans-serif" textAnchor="middle" fontWeight="bold">
                       {p.count}
@@ -115,12 +115,12 @@ export const HistorySvgAnalyticsCharts: React.FC<HistorySvgAnalyticsChartsProps>
 
       {/* 2. Side-by-Side 24-Hour Histogram & Donut Chart */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '8px' }}>
-        {/* 24-Hour Traffic Bar Histogram (Edge-to-Edge Histogram Width) */}
+        {/* 24-Hour Traffic Bar Histogram (Stretches Full Width) */}
         <WinWindow title="RPD 24-Hour Crowd Traffic Histogram" icon={<BarChart2 size={14} />}>
-          <div className="win-inset" style={{ padding: '6px 4px', background: '#ffffff', overflowX: 'auto' }}>
-            <svg viewBox="0 0 500 160" style={{ width: '100%', minWidth: '400px', height: '160px', display: 'block' }}>
-              <line x1={histLeft} y1="20" x2={histRight} y2="20" stroke="#e0e0e0" strokeDasharray="3 3" />
-              <line x1={histLeft} y1="70" x2={histRight} y2="70" stroke="#e0e0e0" strokeDasharray="3 3" />
+          <div className="win-inset" style={{ padding: '6px 4px', background: '#ffffff' }}>
+            <svg viewBox="0 0 1000 160" preserveAspectRatio="none" style={{ width: '100%', height: '160px', display: 'block' }}>
+              <line x1={histLeft} y1="20" x2={histRight} y2="20" stroke="#e0e0e0" strokeDasharray="4 4" />
+              <line x1={histLeft} y1="70" x2={histRight} y2="70" stroke="#e0e0e0" strokeDasharray="4 4" />
               <line x1={histLeft} y1="120" x2={histRight} y2="120" stroke="#808080" strokeWidth="1.5" />
 
               {hourAverages.map((avg, h) => {
@@ -133,12 +133,12 @@ export const HistorySvgAnalyticsCharts: React.FC<HistorySvgAnalyticsChartsProps>
                   <g key={h}>
                     <rect x={x} y={y} width={barWidth} height={Math.max(2, barHeight)} fill={color} stroke="#000000" strokeWidth="1" />
                     {avg > 0 && (
-                      <text x={x + barWidth / 2} y={y - 4} fill="#000000" fontSize="9" fontFamily="Tahoma, sans-serif" textAnchor="middle" fontWeight="bold">
+                      <text x={x + barWidth / 2} y={y - 4} fill="#000000" fontSize="10" fontFamily="Tahoma, sans-serif" textAnchor="middle" fontWeight="bold">
                         {avg.toFixed(1)}
                       </text>
                     )}
                     {h % 2 === 0 && (
-                      <text x={x + barWidth / 2} y="138" fill="#000000" fontSize="9" fontFamily="Tahoma, sans-serif" textAnchor="middle" fontWeight="bold">
+                      <text x={x + barWidth / 2} y="138" fill="#000000" fontSize="10" fontFamily="Tahoma, sans-serif" textAnchor="middle" fontWeight="bold">
                         {h}h
                       </text>
                     )}
