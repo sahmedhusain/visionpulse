@@ -1,7 +1,7 @@
 import React from 'react';
 import type { HistoryRecord } from '../../types/history';
 import { WinWindow } from '../win98/WinWindow';
-import { TrendingUp, BarChart2, PieChart, Zap } from 'lucide-react';
+import { TrendingUp, BarChart2, PieChart } from 'lucide-react';
 
 interface HistorySvgAnalyticsChartsProps {
   records: HistoryRecord[];
@@ -13,27 +13,29 @@ export const HistorySvgAnalyticsCharts: React.FC<HistorySvgAnalyticsChartsProps>
   // Chronological order (left to right)
   const chronoRecords = [...records].reverse();
 
-  // --- Graph 1: Timeline Occupancy Line Chart SVG Math ---
-  const width = 500;
-  const height = 110;
-  const padding = 20;
+  // --- Graph 1: Timeline Occupancy Trend (PerfMon Style) ---
+  const width = 800;
+  const height = 180;
+  const paddingLeft = 40;
+  const paddingBottom = 30;
+  const paddingTop = 20;
+  const paddingRight = 20;
 
   const maxCount = Math.max(...chronoRecords.map(r => r.count), 5);
+  const yTicks = [0, Math.round(maxCount / 2), maxCount];
+
   const points = chronoRecords.map((r, index) => {
-    const x = padding + (index / Math.max(1, chronoRecords.length - 1)) * (width - 2 * padding);
-    const y = height - padding - (r.count / maxCount) * (height - 2 * padding);
-    return { x, y, count: r.count };
+    const x = paddingLeft + (index / Math.max(1, chronoRecords.length - 1)) * (width - paddingLeft - paddingRight);
+    const y = height - paddingBottom - (r.count / maxCount) * (height - paddingTop - paddingBottom);
+    const timeStr = new Date(r.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    return { x, y, count: r.count, timeStr };
   });
 
   const pathD = points.length > 0
     ? `M ${points[0].x} ${points[0].y} ` + points.slice(1).map(p => `L ${p.x} ${p.y}`).join(' ')
     : '';
 
-  const areaD = points.length > 0
-    ? `${pathD} L ${points[points.length - 1].x} ${height - padding} L ${points[0].x} ${height - padding} Z`
-    : '';
-
-  // --- Graph 2: 24-Hour Traffic Bar Chart SVG Math ---
+  // --- Graph 2: 24-Hour Traffic Bar Chart ---
   const hourCounts: number[] = new Array(24).fill(0);
   const hourTotalScans: number[] = new Array(24).fill(0);
 
@@ -46,168 +48,170 @@ export const HistorySvgAnalyticsCharts: React.FC<HistorySvgAnalyticsChartsProps>
   const hourAverages = hourCounts.map((tot, h) => hourTotalScans[h] > 0 ? tot / hourTotalScans[h] : 0);
   const maxHourAvg = Math.max(...hourAverages, 1);
 
-  // --- Graph 3: Risk Level Donut Chart SVG Math ---
+  // --- Graph 3: Risk Level Donut Chart ---
   const lowCount = records.filter(r => r.count <= 3).length;
   const medCount = records.filter(r => r.count > 3 && r.count <= 7).length;
   const highCount = records.filter(r => r.count > 7).length;
 
   const totalRecs = records.length;
-  const lowPct = totalRecs > 0 ? (lowCount / totalRecs) : 0;
-  const medPct = totalRecs > 0 ? (medCount / totalRecs) : 0;
+  const lowPct = totalRecs > 0 ? Math.round((lowCount / totalRecs) * 100) : 0;
+  const medPct = totalRecs > 0 ? Math.round((medCount / totalRecs) * 100) : 0;
+  const highPct = totalRecs > 0 ? Math.round((highCount / totalRecs) * 100) : 0;
 
-  const circumference = 2 * Math.PI * 30; // radius = 30
-  const lowStroke = lowPct * circumference;
-  const medStroke = medPct * circumference;
-  const highStroke = (1 - lowPct - medPct) * circumference;
+  const circumference = 2 * Math.PI * 45; // radius = 45
+  const lowStroke = (lowCount / Math.max(1, totalRecs)) * circumference;
+  const medStroke = (medCount / Math.max(1, totalRecs)) * circumference;
+  const highStroke = (highCount / Math.max(1, totalRecs)) * circumference;
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', marginBottom: '6px' }}>
-      {/* SVG Chart 1: Compact Crowd Size Timeline Curve */}
-      <WinWindow title="RPD Occupancy Trend (SVG)" icon={<TrendingUp size={13} />}>
-        <div className="win-inset" style={{ padding: '4px', background: '#000000', overflow: 'hidden' }}>
-          <svg viewBox={`0 0 ${width} ${height}`} style={{ width: '100%', height: '95px', display: 'block' }}>
-            <defs>
-              <linearGradient id="rpdLineGradCompact" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#00ffff" stopOpacity="0.5" />
-                <stop offset="100%" stopColor="#00ffff" stopOpacity="0.05" />
-              </linearGradient>
-            </defs>
-
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '8px' }}>
+      {/* 1. Large Classic Win98 PerfMon Style Occupancy Trend Chart */}
+      <WinWindow title="RPD Occupancy Telemetry Monitor (PerfMon Style)" icon={<TrendingUp size={14} />}>
+        <div className="win-inset" style={{ padding: '8px', background: '#ffffff', overflowX: 'auto' }}>
+          <svg viewBox={`0 0 ${width} ${height}`} style={{ width: '100%', minWidth: '600px', height: '180px', display: 'block' }}>
             {/* Grid lines */}
-            <line x1={padding} y1={padding} x2={width - padding} y2={padding} stroke="#222" strokeDasharray="2 2" />
-            <line x1={padding} y1={height / 2} x2={width - padding} y2={height / 2} stroke="#222" strokeDasharray="2 2" />
-            <line x1={padding} y1={height - padding} x2={width - padding} y2={height - padding} stroke="#555" />
+            <line x1={paddingLeft} y1={paddingTop} x2={width - paddingRight} y2={paddingTop} stroke="#e0e0e0" strokeDasharray="3 3" />
+            <line x1={paddingLeft} y1={height / 2} x2={width - paddingRight} y2={height / 2} stroke="#e0e0e0" strokeDasharray="3 3" />
+            <line x1={paddingLeft} y1={height - paddingBottom} x2={width - paddingRight} y2={height - paddingBottom} stroke="#808080" strokeWidth="1.5" />
+            <line x1={paddingLeft} y1={paddingTop} x2={paddingLeft} y2={height - paddingBottom} stroke="#808080" strokeWidth="1.5" />
 
-            {/* Area Fill */}
-            {areaD && <path d={areaD} fill="url(#rpdLineGradCompact)" />}
+            {/* Y-Axis Labels */}
+            {yTicks.map((val, i) => {
+              const yPos = height - paddingBottom - (val / maxCount) * (height - paddingTop - paddingBottom);
+              return (
+                <text key={i} x={paddingLeft - 8} y={yPos + 4} fill="#000000" fontSize="11" fontFamily="Tahoma, sans-serif" textAnchor="end" fontWeight="bold">
+                  {val}
+                </text>
+              );
+            })}
 
-            {/* Main Trend Line */}
-            {pathD && <path d={pathD} fill="none" stroke="#00ffff" strokeWidth="2" />}
+            {/* Main Trend Line in Classic Win98 Navy Blue */}
+            {pathD && <path d={pathD} fill="none" stroke="#000080" strokeWidth="3" />}
 
-            {/* Data Points */}
+            {/* Data Points & Numbers */}
             {points.map((p, i) => (
               <g key={i}>
-                <circle cx={p.x} cy={p.y} r="2.5" fill="#000" stroke="#00ffff" strokeWidth="1.5" />
+                <circle cx={p.x} cy={p.y} r="4" fill="#000080" stroke="#ffffff" strokeWidth="1.5" />
+                {(i === 0 || i === points.length - 1 || i % Math.ceil(points.length / 8) === 0) && (
+                  <>
+                    <text x={p.x} y={p.y - 8} fill="#800000" fontSize="11" fontFamily="Tahoma, sans-serif" textAnchor="middle" fontWeight="bold">
+                      {p.count}
+                    </text>
+                    <text x={p.x} y={height - 10} fill="#606060" fontSize="10" fontFamily="Tahoma, sans-serif" textAnchor="middle">
+                      {p.timeStr}
+                    </text>
+                  </>
+                )}
               </g>
             ))}
           </svg>
         </div>
       </WinWindow>
 
-      {/* SVG Chart 2: Compact 24-Hour Traffic Bar Chart */}
-      <WinWindow title="RPD 24h Density Histogram (SVG)" icon={<BarChart2 size={13} />}>
-        <div className="win-inset" style={{ padding: '4px', background: '#000000', overflow: 'hidden' }}>
-          <svg viewBox="0 0 360 110" style={{ width: '100%', height: '95px', display: 'block' }}>
-            <line x1="15" y1="15" x2="345" y2="15" stroke="#222" strokeDasharray="2 2" />
-            <line x1="15" y1="55" x2="345" y2="55" stroke="#222" strokeDasharray="2 2" />
-            <line x1="15" y1="90" x2="345" y2="90" stroke="#555" />
+      {/* 2. Side-by-Side Large 24-Hour Histogram & Donut Chart */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '8px' }}>
+        {/* 24-Hour Traffic Bar Histogram */}
+        <WinWindow title="RPD 24-Hour Crowd Traffic Histogram" icon={<BarChart2 size={14} />}>
+          <div className="win-inset" style={{ padding: '8px', background: '#ffffff', overflowX: 'auto' }}>
+            <svg viewBox="0 0 500 160" style={{ width: '100%', minWidth: '400px', height: '160px', display: 'block' }}>
+              {/* Horizontal Axes */}
+              <line x1="30" y1="20" x2="480" y2="20" stroke="#e0e0e0" strokeDasharray="3 3" />
+              <line x1="30" y1="70" x2="480" y2="70" stroke="#e0e0e0" strokeDasharray="3 3" />
+              <line x1="30" y1="120" x2="480" y2="120" stroke="#808080" strokeWidth="1.5" />
 
-            {hourAverages.map((avg, h) => {
-              const barHeight = (avg / maxHourAvg) * 70;
-              const x = 20 + h * 13.5;
-              const y = 90 - barHeight;
-              const color = avg > 7 ? '#ff0000' : avg > 3 ? '#ff8c00' : '#00ff00';
+              {/* 24 Hourly Bars */}
+              {hourAverages.map((avg, h) => {
+                const barHeight = (avg / maxHourAvg) * 95;
+                const x = 35 + h * 18.5;
+                const y = 120 - barHeight;
+                const color = avg > 7 ? '#800000' : avg > 3 ? '#ff8c00' : '#008000';
 
-              return (
-                <g key={h}>
-                  <rect x={x} y={y} width="9" height={Math.max(2, barHeight)} fill={color} stroke="#000" strokeWidth="0.5" />
-                  {h % 4 === 0 && (
-                    <text x={x + 4} y="104" fill="#888" fontSize="7" fontFamily="monospace" textAnchor="middle">
-                      {h}h
-                    </text>
-                  )}
-                </g>
-              );
-            })}
-          </svg>
-        </div>
-      </WinWindow>
+                return (
+                  <g key={h}>
+                    <rect x={x} y={y} width="14" height={Math.max(2, barHeight)} fill={color} stroke="#000000" strokeWidth="1" />
+                    {avg > 0 && (
+                      <text x={x + 7} y={y - 4} fill="#000000" fontSize="9" fontFamily="Tahoma, sans-serif" textAnchor="middle" fontWeight="bold">
+                        {avg.toFixed(1)}
+                      </text>
+                    )}
+                    {h % 2 === 0 && (
+                      <text x={x + 7} y="138" fill="#000000" fontSize="9" fontFamily="Tahoma, sans-serif" textAnchor="middle" fontWeight="bold">
+                        {h}h
+                      </text>
+                    )}
+                  </g>
+                );
+              })}
+            </svg>
+          </div>
+        </WinWindow>
 
-      {/* SVG Chart 3: Compact Risk Level Donut Chart */}
-      <WinWindow title="RPD Risk Distribution Donut (SVG)" icon={<PieChart size={13} />}>
-        <div className="win-inset" style={{ padding: '6px 10px', background: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'space-around', height: '95px' }}>
-          <svg viewBox="0 0 80 80" style={{ width: '75px', height: '75px' }}>
-            <circle cx="40" cy="40" r="30" fill="transparent" stroke="#e0e0e0" strokeWidth="12" />
-            <circle
-              cx="40"
-              cy="40"
-              r="30"
-              fill="transparent"
-              stroke="#008000"
-              strokeWidth="12"
-              strokeDasharray={`${lowStroke} ${circumference}`}
-              strokeDashoffset="0"
-              transform="rotate(-90 40 40)"
-            />
-            <circle
-              cx="40"
-              cy="40"
-              r="30"
-              fill="transparent"
-              stroke="#ff8c00"
-              strokeWidth="12"
-              strokeDasharray={`${medStroke} ${circumference}`}
-              strokeDashoffset={`-${lowStroke}`}
-              transform="rotate(-90 40 40)"
-            />
-            <circle
-              cx="40"
-              cy="40"
-              r="30"
-              fill="transparent"
-              stroke="#800000"
-              strokeWidth="12"
-              strokeDasharray={`${highStroke} ${circumference}`}
-              strokeDashoffset={`-${lowStroke + medStroke}`}
-              transform="rotate(-90 40 40)"
-            />
-            <text x="40" y="44" textAnchor="middle" fontSize="9" fontWeight="bold" fill="#000080" fontFamily="monospace">
-              {records.length}
-            </text>
-          </svg>
+        {/* Risk Distribution Donut & Legend */}
+        <WinWindow title="RPD Occupancy Risk Distribution" icon={<PieChart size={14} />}>
+          <div className="win-inset" style={{ padding: '12px', background: '#ffffff', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '12px', minHeight: '160px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+              <svg viewBox="0 0 120 120" style={{ width: '100px', height: '100px' }}>
+                <circle cx="60" cy="60" r="45" fill="transparent" stroke="#e0e0e0" strokeWidth="18" />
+                {/* Normal Segment (Green) */}
+                <circle
+                  cx="60"
+                  cy="60"
+                  r="45"
+                  fill="transparent"
+                  stroke="#008000"
+                  strokeWidth="18"
+                  strokeDasharray={`${lowStroke} ${circumference}`}
+                  strokeDashoffset="0"
+                  transform="rotate(-90 60 60)"
+                />
+                {/* Moderate Segment (Orange) */}
+                <circle
+                  cx="60"
+                  cy="60"
+                  r="45"
+                  fill="transparent"
+                  stroke="#ff8c00"
+                  strokeWidth="18"
+                  strokeDasharray={`${medStroke} ${circumference}`}
+                  strokeDashoffset={`-${lowStroke}`}
+                  transform="rotate(-90 60 60)"
+                />
+                {/* High Segment (Red) */}
+                <circle
+                  cx="60"
+                  cy="60"
+                  r="45"
+                  fill="transparent"
+                  stroke="#800000"
+                  strokeWidth="18"
+                  strokeDasharray={`${highStroke} ${circumference}`}
+                  strokeDashoffset={`-${lowStroke + medStroke}`}
+                  transform="rotate(-90 60 60)"
+                />
+                <text x="60" y="65" textAnchor="middle" fontSize="13" fontWeight="bold" fill="#000080" fontFamily="Tahoma, sans-serif">
+                  {totalRecs} Logs
+                </text>
+              </svg>
 
-          {/* Compact Legend */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', fontSize: '10px', fontWeight: 'bold' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <div style={{ width: '10px', height: '10px', background: '#008000', border: '1px solid #000' }} />
-              <span>Normal (1-3): {lowCount}</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <div style={{ width: '10px', height: '10px', background: '#ff8c00', border: '1px solid #000' }} />
-              <span>Moderate (4-7): {medCount}</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <div style={{ width: '10px', height: '10px', background: '#800000', border: '1px solid #000' }} />
-              <span>Alarm (8+): {highCount}</span>
+              {/* Legends */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', fontSize: '11px', fontWeight: 'bold' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div style={{ width: '14px', height: '14px', background: '#008000', border: '1px solid #000' }} />
+                  <span>Normal (1-3): {lowCount} ({lowPct}%)</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div style={{ width: '14px', height: '14px', background: '#ff8c00', border: '1px solid #000' }} />
+                  <span>Moderate (4-7): {medCount} ({medPct}%)</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div style={{ width: '14px', height: '14px', background: '#800000', border: '1px solid #000' }} />
+                  <span>Alarm (8+): {highCount} ({highPct}%)</span>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </WinWindow>
-
-      {/* SVG Chart 4: Compact Neural Inference Speed Latency Chart */}
-      <WinWindow title="RPD Latency Telemetry (SVG)" icon={<Zap size={13} />}>
-        <div className="win-inset" style={{ padding: '4px', background: '#04070a', overflow: 'hidden' }}>
-          <svg viewBox="0 0 360 110" style={{ width: '100%', height: '95px', display: 'block' }}>
-            <line x1="15" y1="15" x2="345" y2="15" stroke="#222" />
-            <line x1="15" y1="55" x2="345" y2="55" stroke="#222" />
-            <line x1="15" y1="90" x2="345" y2="90" stroke="#444" />
-
-            {chronoRecords.map((r, idx) => {
-              const x = 20 + (idx / Math.max(1, chronoRecords.length - 1)) * 325;
-              const maxMs = Math.max(...chronoRecords.map(rec => rec.inference_time_ms), 50);
-              const y = 90 - (r.inference_time_ms / maxMs) * 70;
-              return (
-                <g key={r.id}>
-                  <circle cx={x} cy={y} r="2.5" fill="#ffff00" stroke="#000" strokeWidth="0.5" />
-                </g>
-              );
-            })}
-            <text x="25" y="28" fill="#ffff00" fontSize="9" fontFamily="monospace" fontWeight="bold">
-              Latency (ms) Speed Plot
-            </text>
-          </svg>
-        </div>
-      </WinWindow>
+        </WinWindow>
+      </div>
     </div>
   );
 };
