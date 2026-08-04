@@ -10,18 +10,29 @@ class IPCameraStreamer:
         self.stream_url = stream_url
 
     async def generate_frames(self, conf_threshold: float = 0.35) -> AsyncGenerator[dict, None]:
-        cap = cv2.VideoCapture(self.stream_url)
+        # Support RTSP, HTTP-FLV, MJPEG, and NDI streams with FFMPEG backend
+        cap = cv2.VideoCapture(self.stream_url, cv2.CAP_FFMPEG)
         if not cap.isOpened():
-            raise ValueError(f"Unable to open stream at URL: {self.stream_url}")
+            cap = cv2.VideoCapture(self.stream_url)
+            if not cap.isOpened():
+                raise ValueError(f"Unable to connect to camera stream at: {self.stream_url}")
 
         try:
+            consecutive_failures = 0
             while True:
                 ret, frame_bgr = cap.read()
-                if not ret:
-                    # Wait briefly and attempt to reconnect or read again
-                    await asyncio.sleep(0.1)
+                if not ret or frame_bgr is None:
+                    consecutive_failures += 1
+                    if consecutive_failures > 50:
+                        # Attempt to reconnect stream
+                        cap.release()
+                        await asyncio.sleep(0.5)
+                        cap = cv2.VideoCapture(self.stream_url)
+                        consecutive_failures = 0
+                    await asyncio.sleep(0.05)
                     continue
 
+                consecutive_failures = 0
                 frame_resized = resize_for_inference(frame_bgr, max_dim=640)
                 detections, count, avg_conf, inference_time_ms = detector_service.detect(frame_resized, conf_threshold)
 
@@ -36,7 +47,8 @@ class IPCameraStreamer:
                     "processed_image": processed_base64
                 }
 
-                # Yield to event loop for smooth 10 FPS streaming
-                await asyncio.sleep(0.1)
+                # Yield to event loop for smooth real-time streaming
+                await asyncio.sleep(0.08)
         finally:
-            cap.release()
+            if cap and cap.isOpened():
+                cap.release()
