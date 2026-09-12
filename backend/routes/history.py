@@ -40,5 +40,5 @@ def export_csv(db: Session = Depends(get_db)):
     return Response(
         content=csv_data,
         media_type="text/csv",
-        headers={"Content-Disposition": "attachment; filename=detecto_history.csv"}
+        headers={"Content-Disposition": "attachment; filename=visionpulse_history.csv"}
     )

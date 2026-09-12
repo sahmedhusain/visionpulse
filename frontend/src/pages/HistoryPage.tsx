@@ -33,7 +33,7 @@ Analyzed Samples: ${data.records.length}
 Peak Session Crowd Size: ${peakCount} Persons
 Average Occupancy Per Scan: ${avgCount} Persons
 Average Neural Confidence: ${avgConf}%
-Database Engine: SQLite (detecto.db)
+Database Engine: SQLite (visionpulse.db)
 =====================================================
 RECENT LOG ENTRIES:
 ${data.records.slice(0, 10).map(r => `[ID #${r.id}] ${r.timestamp} | Count: ${r.count} | Conf: ${Math.round(r.avg_confidence * 100)}% | Speed: ${r.inference_time_ms}ms`).join('\n')}
@@ -64,7 +64,7 @@ ${data.records.slice(0, 10).map(r => `[ID #${r.id}] ${r.timestamp} | Count: ${r.
         icon={<History size={14} />}
         statusBarContent={
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', fontSize: '11px', fontWeight: 'bold' }}>
-            <span>Database: SQLite (detecto.db)</span>
+            <span>Database: SQLite (visionpulse.db)</span>
             <span>Total Logged Entries: {data.total}</span>
             <span>Mode: Read/Write</span>
           </div>

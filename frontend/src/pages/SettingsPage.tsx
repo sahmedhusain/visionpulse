@@ -92,7 +92,7 @@ export const SettingsPage: React.FC<SettingsPageProps> = ({
         icon={<Sliders size={14} />}
         statusBarContent={
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', fontSize: '11px', fontWeight: 'bold' }}>
-            <span>Config File: detecto.db</span>
+            <span>Config File: visionpulse.db</span>
             <span>Camera Permission: {cameraStatus}</span>
             <span>Audio Alarm: {soundEnabled ? `${soundPitch}Hz ACTIVE` : 'OFF'}</span>
           </div>

@@ -12,7 +12,7 @@ export const HistoryTable: React.FC<HistoryTableProps> = ({ records, isLoading, 
   if (isLoading) {
     return (
       <div className="win-inset" style={{ padding: '20px', textAlign: 'center', color: '#808080', fontSize: '11px' }}>
-        Fetching history records from detecto.db database...
+        Fetching history records from visionpulse.db database...
       </div>
     );
   }

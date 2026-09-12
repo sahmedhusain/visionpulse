@@ -1,4 +1,4 @@
-# 🖥️ RPD - Real-Time Person Detection & Visual Analytics System
+# 👁️ VisionPulse
 
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.109.0-009688.svg?style=flat&logo=FastAPI&logoColor=white)](https://fastapi.tiangolo.com/)
 [![React](https://img.shields.io/badge/React-18.3.1-61DAFB.svg?style=flat&logo=react&logoColor=black)](https://reactjs.org/)
@@ -7,270 +7,120 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.5.3-3178C6.svg?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![UI Style](https://img.shields.io/badge/Design-Retro%20Windows%2098-008080.svg)](https://github.com/)
 
-**RPD** (*Real-Time Person Detection & Visual Analytics*) is an industrial-grade, real-time computer vision monitoring and crowd analytics suite. Built with a high-performance **FastAPI** backend, **YOLOv8** deep learning object detection engine, and an authentic **Windows 98 Retro Desktop** frontend (**React + TypeScript + Vite**), RPD provides real-time crowd density monitoring, occupancy zone alerts, automated detection logging, and executive telemetry reporting.
+**VisionPulse** is an industrial-grade, real-time computer vision monitoring and crowd analytics platform. Powered by a high-performance **FastAPI** backend, **YOLOv8** deep learning object detection engine, and an authentic **Windows 98 Retro Desktop** frontend (**React + TypeScript + Vite**), VisionPulse provides real-time crowd density monitoring, occupancy zone alerts, automated detection logging, and executive telemetry reporting.
 
 ---
 
-## 🏛️ Project Purpose & Real-World Role
+## ✨ Features & Capabilities
 
-In automated facility management, safety monitoring, and smart space automation (such as building entrances, warehouses, classrooms, or restricted security zones), operators require immediate visual feedback on human presence and crowd size without complex setup.
-
-RPD solves this by delivering:
-- **Instant Optical Person Detection**: Accurate identification of individuals with bounding box overlays and confidence metrics.
-- **Multi-Source Ingestion**: Ingest live hardware webcams, IP camera / RTSP / NDI network feeds, uploaded media files, or benchmark sample datasets.
-- **Zone Occupancy Safeguards**: Real-time auditory and visual alarms when crowd size exceeds configured threshold limits.
-- **Historical Telemetry Logging**: Persistent SQLite database storage for every scan with query filter engines, executive summaries, text reports, and CSV exports.
+- **YOLOv8 Neural Detection Engine**: Optimized real-time CPU/GPU person detection (COCO Class 0) with bounding box overlays and confidence metrics.
+- **Multi-Source Ingestion**: Supports hardware webcams, IP camera / RTSP / NDI network feeds, drag-and-drop media file uploads, and benchmark sample datasets.
+- **Occupancy Zone Safeguards**: Dynamic Web Audio Synthesizer (880Hz warning tone) and visual alarms when crowd size exceeds configured threshold limits.
+- **Telemetry & Pure SVG Analytics**: Dynamic SVG vector trend line charts, 24-hour occupancy histograms, risk distribution donut charts, and live gauges.
+- **Historical Telemetry Logging**: Persistent SQLite database storage (`visionpulse.db`) with query filters, executive summaries, text reports, and CSV exports.
 
 ---
 
-## 📐 System Architecture & Workflow Diagrams
+## 📋 Table of Contents
 
-### 1. Overall System Architecture & Data Flow Diagram
+- [Features & Capabilities](#-features--capabilities)
+- [System Architecture](#-system-architecture)
+- [Neural Inference Pipeline](#-neural-inference-pipeline)
+- [Setup & Execution](#-setup--execution)
+- [Project Directory Structure](#-project-directory-structure)
+- [API Reference](#-api-reference)
+- [License](#-license)
+
+---
+
+## 🏗️ System Architecture
 
 ```mermaid
 graph TD
     subgraph Client["Frontend - React + TypeScript (Win98 Desktop)"]
-        UI["App Dashboard / Tabs"]
-        InpMgr["Input Sources Manager"]
+        UI["App Dashboard & Multi-Tab Router"]
+        InpMgr["Input Sources Manager (Webcam / IP / File)"]
         Canvas["Visual Stream Monitor Display"]
         Telem["Advanced Telemetry & Mini Widgets"]
-        Synth["Web Audio Alert Synthesizer"]
-        HistUI["History Analytics & SVG Charts"]
-        Settings["Control Panel Settings Page"]
-    end
-
-    subgraph DataSources["Input Sources"]
-        Cam["Hardware Webcam (1080p Widescreen)"]
-        IPCam["IP / RTSP / NDI Camera Stream"]
-        Upload["File Upload Dropzone"]
-        Demos["10 Demo Benchmark Samples"]
+        Synth["Web Audio Synthesizer Alert"]
+        HistUI["History Analytics & SVG Vector Charts"]
     end
 
     subgraph Backend["Backend Server - FastAPI (Python)"]
         Router["FastAPI API Routers"]
-        WS["WebSocket Streaming Server"]
+        WS["WebSocket Real-Time Stream Engine"]
         Pre["Preprocessor (OpenCV / Base64)"]
-        YOLO["YOLOv8 Object Detection Engine"]
-        Overlay["Bounding Box Annotation Overlay"]
+        YOLO["YOLOv8 Deep Learning Inference Engine"]
+        Overlay["Bounding Box Renderer"]
         HistService["History Service & CSV Exporter"]
-        DB[(SQLite detecto.db)]
+        DB[(SQLite visionpulse.db)]
     end
 
-    DataSources --> InpMgr
     InpMgr -->|Frame / Media Payload| Router
-    InpMgr -->|Live Stream Packets| WS
-    Router --> Pre
-    WS --> Pre
-    Pre --> YOLO
-    YOLO --> Overlay
-    Overlay -->|Annotated Frame + Detections JSON| Router
-    Overlay -->|Annotated Frame + Detections JSON| WS
-    YOLO -->|Save Detection Record| HistService
-    HistService --> DB
-    Router -->|HTTP JSON Response| Canvas
-    WS -->|WebSocket Push Payload| Canvas
-    Canvas --> Telem
-    Telem -->|Check Max Occupancy Limit| Synth
+    InpMgr -->|WebSocket Packets| WS
+    Router & WS --> Pre
+    Pre --> YOLO --> Overlay
+    Overlay -->|Annotated Frame + Detections JSON| Canvas
+    YOLO -->|Persist Detection Record| HistService --> DB
+    Canvas --> Telem -->|Threshold Check| Synth
     DB -->|Retrieve Historical Logs| HistUI
-    Settings -->|Persist Preferences| Client
 ```
 
 ---
 
-### 2. Backend Neural Inference Pipeline & Execution Logic
+## 📐 Neural Inference Pipeline
 
 ```mermaid
 flowchart TD
-    Start(["Incoming Detection Request / Video Frame"]) --> Decode["1. Preprocess & Decode Image (OpenCV)"]
-    Decode --> AspectCheck["2. Native Aspect Ratio & Resolution Check"]
-    AspectCheck --> ModelCheck{"3. YOLOv8 Deep Learning Engine Active?"}
+    Start(["Incoming Frame / Image Payload"]) --> Decode["1. Decode Base64 / Multipart Image (OpenCV)"]
+    Decode --> Aspect["2. Resolution & Aspect Ratio Validation"]
+    Aspect --> ModelCheck{"3. Primary YOLOv8 Engine Available?"}
     
-    ModelCheck -- Yes --> YOLOInference["Run YOLOv8 Person Inference (COCO Class 0)"]
+    ModelCheck -- Yes --> YOLOInference["Run YOLOv8 Nano Inference (COCO Class 0)"]
     ModelCheck -- No --> FallbackInference["Run Fallback OpenCV DNN Detector"]
     
-    YOLOInference --> FilterConf["4. Filter Bounding Boxes (conf >= threshold)"]
-    FallbackInference --> FilterConf
-    
-    FilterConf --> ExtractCoords["5. Extract Person Bounding Box Coordinates & Count"]
+    YOLOInference & FallbackInference --> FilterConf["4. Filter Bounding Boxes (conf >= threshold)"]
+    FilterConf --> ExtractCoords["5. Extract Box Coordinates & Person Count"]
     ExtractCoords --> RenderOverlay["6. Render Bounding Boxes & Confidence Labels"]
-    
-    RenderOverlay --> SaveDB["7. Log Detection Record to SQLite Database (detecto.db)"]
-    SaveDB --> FormatResp["8. Assemble JSON Response Payload"]
-    FormatResp --> ReturnClient(["Return Base64 Annotated Image + Detections JSON"])
+    RenderOverlay --> SaveDB["7. Log Record to SQLite Database (visionpulse.db)"]
+    SaveDB --> ReturnClient(["8. Return Annotated Base64 Image + JSON Detections"])
 ```
 
 ---
 
-### 3. Frontend Window State Machine & LocalStorage Sync Flow
-
-```mermaid
-stateDiagram-v2
-    [*] --> DetectionMonitor: Launch RPD Application
-    
-    state DetectionMonitor {
-        [*] --> VisualFeed
-        VisualFeed --> InputManager: Select Webcam / IP Stream / Upload / Demos
-        VisualFeed --> TelemetryGauge: Calculate Crowd Density %
-        TelemetryGauge --> AudioAlarm: Exceeds Max Limit (> Limit)
-    }
-
-    state HistoryAnalytics {
-        [*] --> ExecutiveSummary
-        ExecutiveSummary --> PerfMonCharts: Render Dynamic High-Res SVG Vector Graphs
-        PerfMonCharts --> HistoryDataGrid: Search & Filter Log Entries
-        HistoryDataGrid --> ExportReport: Download Text / CSV Reports
-    }
-
-    state ControlPanelSettings {
-        [*] --> ConfigureThresholds
-        ConfigureThresholds --> TestSoundBeep: Test Web Audio Synthesizer Beep
-        ConfigureThresholds --> SaveLocalStorage: Persist in browser localStorage
-    }
-
-    DetectionMonitor --> HistoryAnalytics: Click "RPD History Log" Tab
-    HistoryAnalytics --> ControlPanelSettings: Click "Control Panel Settings" Tab
-    ControlPanelSettings --> DetectionMonitor: Click "RPD Monitor Display" Tab
-```
-
----
-
-## 🌟 System Features & Capabilities
-
-### 👁️ Core Computer Vision & Ingestion
-- **YOLOv8 Neural Detection Engine**: Uses pretrained YOLOv8 nano (`yolov8n.pt`) optimized for rapid CPU/GPU person detection (COCO Class 0).
-- **Fallback Open CV Preprocessing Engine**: Built-in fallback detector ensuring 100% execution reliability under all environment configurations.
-- **Unified Input Sources Manager**: Single tabbed Win98 launcher unifying hardware webcams, IP Camera / RTSP / NDI URLs, drag-and-drop file uploaders, and 10 pre-installed benchmark demo samples.
-- **Full Resolution & Widescreen Scaling**: Displays video streams at their 100% natural resolution aspect ratios (16:9 HD, 4:3, 1080p, 4K) with 1-click **`[ 🗖 Fullscreen Stream ]`** mode expanding to `100vw x 100vh`.
-
-### 📊 Advanced Telemetry & Analytics
-- **Win98 Advanced Telemetry & Occupancy Gauge**: Displays live crowd density percentages (0–100%+), high/med/low confidence breakdowns, and peak counts.
-- **Web Audio Alert Synthesizer**: Emits an 880Hz retro warning beep when crowd occupancy exceeds user-defined limits.
-- **Mini Dashboard Widgets**: Live Zone Status badge, Model Accuracy meter, and Neural Latency speedometer embedded directly on the main dashboard.
-- **Pure SVG Vector Charts Suite**: 
-  - 📈 *PerfMon Occupancy Telemetry Line Curve*: Full-width vector trend graph with Y-axis scale and timestamp callouts.
-  - 📊 *24-Hour Crowd Traffic Histogram*: Hourly bar chart with color-coded risk levels.
-  - 🍩 *Occupancy Risk Distribution Donut*: Donut chart with live percentage legends.
-  - ⚡ *Dynamic ResizeObserver High-Res Engine*: Tracks container pixel width in real-time, eliminating text or shape distortion on wide/4K monitors.
-
-### ⚙️ Dedicated Control Panel Settings Page
-- Standalone Win98 **Control Panel Settings Page** featuring:
-  - Model Confidence Threshold Slider (0.10 - 0.95)
-  - Max Occupancy Limit Input
-  - Audio Alert Pitch Selector (440Hz / 880Hz / 1200Hz) & Test Beep trigger
-  - Camera Permission & API Health Diagnostic indicators
-  - Full `localStorage` persistence across browser sessions (`rpd_user_settings`)
-
----
-
-## 📁 Repository Infrastructure & Architecture
-
-RPD adheres to a strictly decoupled, modular architecture where schemas, database models, services, routes, and UI components are isolated into dedicated files categorized by responsibility:
-
-```
-detecto/
-├── backend/
-│   ├── core/
-│   │   ├── config.py             # App settings, environment variables, & paths
-│   │   └── database.py           # SQLite database engine & SessionLocal factory
-│   ├── models/
-│   │   └── history_db.py         # SQLAlchemy ORM database model for detection logs
-│   ├── schemas/
-│   │   ├── detection.py          # Pydantic schemas for detection requests/responses
-│   │   └── history.py            # Pydantic schemas for history records & query filters
-│   ├── services/
-│   │   ├── preprocessor.py       # Image decoding, normalization, & color conversion
-│   │   ├── detector.py           # YOLOv8 deep learning object detection service
-│   │   ├── overlay.py            # Bounding box annotation & label renderer
-│   │   └── history_service.py    # Database CRUD operations & CSV report generation
-│   ├── routes/
-│   │   ├── health.py             # Health check endpoint (/health)
-│   │   ├── detect.py             # Detection endpoint (/api/v1/detect, /detect)
-│   │   └── history.py            # History & export endpoints (/api/v1/history, /reset)
-│   ├── samples/                  # 10 test benchmark images (frame1.jpg to frame10.jpg)
-│   ├── eval_benchmark.py         # Automated evaluation benchmark script
-│   └── main.py                   # FastAPI app entrypoint & route assembly
-│
-├── frontend/
-│   ├── public/
-│   │   ├── favicon.svg           # RPD Win98 pixel logo icon
-│   │   └── samples/              # 10 demo sample images for frontend gallery
-│   └── src/
-│       ├── api/
-│       │   └── client.ts         # Axios API client with automatic port fallback
-│       ├── types/
-│       │   ├── detection.ts      # TypeScript interfaces for detection data
-│       │   ├── history.ts        # TypeScript interfaces for history records
-│       │   └── settings.ts       # TypeScript interfaces for user settings
-│       ├── hooks/
-│       │   ├── useDetection.ts   # Custom hook for image detection
-│       │   ├── useHistory.ts     # Custom hook for history data & filtering
-│       │   └── useDetectionStream.ts # Hook for live webcam streaming
-│       ├── components/
-│       │   ├── win98/
-│       │   │   ├── WinTopBar.tsx # Top bar with RPD logo & 1-click tab buttons
-│       │   │   ├── WinTaskbar.tsx# Bottom Win98 taskbar (44px), Start Menu, & clock
-│       │   │   └── WinWindow.tsx # Win98 bevel window wrapper container
-│       │   ├── detection/
-│       │   │   ├── DetectionCanvas.tsx       # Live visual feed monitor with fullscreen
-│       │   │   ├── InputSourcesWindow.tsx   # Tabbed input source manager
-│       │   │   ├── AnalyticsWindow.tsx        # Telemetry occupancy gauge & audio alert
-│       │   │   ├── MiniWidgets.tsx            # Main page mini telemetry badges
-│       │   │   ├── WebcamDetector.tsx         # Hardware webcam & IP stream capture
-│       │   │   └── CameraSourceWindow.tsx     # Dedicated camera stream container
-│       │   └── history/
-│       │       ├── HistoryAnalyticsSummary.tsx# Executive stat cards & peak breakdown
-│       │       ├── HistorySvgAnalyticsCharts.tsx # High-res pure SVG vector graphs
-│       │       ├── HistoryTable.tsx           # Win98 history data grid with risk badges
-│       │       └── HistoryFilters.tsx         # Query search & min/max count filters
-│       ├── pages/
-│       │   ├── DetectionPage.tsx # Live Detection Dashboard view
-│       │   ├── HistoryPage.tsx   # Executive History Log & Analytics view
-│       │   └── SettingsPage.tsx  # Control Panel Settings Page view
-│       ├── index.css             # Win98 retro CSS design system & bevel styles
-│       ├── App.tsx               # Root tab navigation & LocalStorage manager
-│       └── main.tsx              # React entrypoint
-│
-├── .env                          # Environment configuration variables
-├── requirements.txt              # Python dependencies
-├── objectives.md                 # Project requirements checklist
-└── README.md                     # Project documentation
-```
-
----
-
-## 🚀 Setup & Execution Guide
+## 🚀 Setup & Execution
 
 ### Prerequisites
-- **Python 3.9+** installed
-- **Node.js v18+** & **npm** installed
+- **Python**: 3.9+ installed
+- **Node.js**: v18+ & **npm** installed
 
 ---
 
-### 1. Backend Setup (FastAPI)
+### 1. Backend Server (FastAPI)
 
 ```bash
 # Navigate to project root
-cd detecto
+cd visionpulse
 
 # Create and activate Python virtual environment
 python3 -m venv .venv
 source .venv/bin/activate
 
-# Install backend dependencies
+# Install dependencies
 pip install -r requirements.txt
 
 # Launch FastAPI backend server
 uvicorn backend.main:app --host 0.0.0.0 --port 8001
 ```
-*The FastAPI backend will start at `http://localhost:8001` (Interactive API docs at `http://localhost:8001/docs`).*
+*FastAPI backend starts at `http://localhost:8001` (Swagger API docs at `http://localhost:8001/docs`).*
 
 ---
 
-### 2. Frontend Setup (React + Vite + TypeScript)
+### 2. Frontend Dashboard (React + Vite)
 
 ```bash
 # Open a new terminal tab and navigate to frontend
-cd detecto/frontend
+cd visionpulse/frontend
 
 # Install dependencies
 npm install
@@ -278,79 +128,54 @@ npm install
 # Launch Vite development server
 npm run dev
 ```
-*The RPD Web Dashboard will open at `http://localhost:5173`.*
+*The VisionPulse Web Dashboard starts at `http://localhost:5173`.*
 
 ---
 
-## 📊 Evaluation & Benchmark Validation Metrics
+## 📂 Project Directory Structure
 
-The system was evaluated against **10 standard benchmark test images** (`frame1.jpg` to `frame10.jpg`) representing diverse crowd densities (1 to 10 people), varying lighting conditions, and partial body occlusions.
-
-### System Performance vs Target Criteria Table
-
-| Metric | Description | Required Target | Measured Result | Evaluation Status |
-| :--- | :--- | :---: | :---: | :---: |
-| **Detection Accuracy** | Correct detections ÷ total visible persons | **≥ 85 %** | **84.31 %** | ✅ **PASS** |
-| **False Positives Rate** | Non-person detections ÷ total detections | **≤ 10 %** | **0.00 %** | ✅ **PASS** |
-| **Average Inference Time** | Mean processing time per image (CPU/GPU) | **≤ 1.5 s** | **0.1019 s** | ✅ **PASS** |
-| **Average Confidence** | Mean confidence score of valid detections | **≥ 0.70** | **0.7237** | ✅ **PASS** |
-| **System Reliability** | Test images processed without crashes/errors | **100 %** | **100.00 %** | ✅ **PASS** |
-
----
-
-### Detailed Test Image Evaluation Breakdown
-
-The automated evaluation script (`python -m backend.eval_benchmark`) executed the 10 test images with the following exact measurements:
-
-| Image Name | Ground Truth Count | Model Detected Count | Avg Confidence | Inference Time (ms) | Result Status |
-| :--- | :---: | :---: | :---: | :---: | :---: |
-| `frame1.jpg` | 1 | 1 | 84.0% | 756.5 ms | ✅ PASSED |
-| `frame2.jpg` | 9 | 9 | 57.0% | 28.7 ms | ✅ PASSED |
-| `frame3.jpg` | 5 | 5 | 76.0% | 29.0 ms | ✅ PASSED |
-| `frame4.jpg` | 1 | 1 | 85.0% | 28.6 ms | ✅ PASSED |
-| `frame5.jpg` | 3 | 3 | 81.0% | 29.6 ms | ✅ PASSED |
-| `frame6.jpg` | 6 | 6 | 72.0% | 29.8 ms | ✅ PASSED |
-| `frame7.jpg` | 5 | 5 | 72.0% | 28.8 ms | ✅ PASSED |
-| `frame8.jpg` | 10 | 10 | 63.0% | 28.1 ms | ✅ PASSED |
-| `frame9.jpg` | 3 | 3 | 62.0% | 28.0 ms | ✅ PASSED |
-| `frame10.jpg`| 8 | 8* | -- | 31.7 ms | ✅ PASSED |
-
-*Note: You can run the automated benchmark anytime with `python -m backend.eval_benchmark`.*
+```
+visionpulse/
+├── backend/
+│   ├── core/
+│   │   ├── config.py             # Settings, env vars, & SQLite database URL
+│   │   └── database.py           # SQLAlchemy engine & session factory
+│   ├── models/
+│   │   └── history_db.py         # Detection history database ORM model
+│   ├── services/
+│   │   ├── detector.py           # YOLOv8 object detection service
+│   │   ├── overlay.py            # Bounding box renderer
+│   │   └── history_service.py    # Database CRUD operations & CSV exporter
+│   ├── routes/
+│   │   ├── detect.py             # Detection REST endpoints (/detect)
+│   │   └── history.py            # History & export REST endpoints (/history)
+│   └── main.py                   # FastAPI application entrypoint
+├── frontend/
+│   ├── src/
+│   │   ├── api/client.ts         # Axios API client wrapper
+│   │   ├── components/           # Win98 window frames, telemetry gauges, & SVG charts
+│   │   ├── hooks/                # Custom state hooks for detection & history
+│   │   ├── pages/                # Detection, History, and Settings page views
+│   │   └── App.tsx               # Win98 desktop tab router
+│   └── package.json
+└── README.md
+```
 
 ---
 
-## 📝 Test Log, Failure Cases & Engineering Insights
+## 🔌 API Reference
 
-### What Worked Well
-1. **Ultra-Fast Inference Speed**: The YOLOv8 nano model consistently achieved sub-30ms inference processing times per frame on standard CPU hardware.
-2. **Zero False Positives**: The model recorded a 0.00% false positive rate across all benchmark test sets, correctly ignoring non-human background objects.
-3. **High Single/Small Group Precision**: For low-to-medium density crowds (1 to 5 people), detection accuracy exceeded 95% with high confidence scores (>80%).
-
-### Logged Failure Cases & Edge Conditions
-1. **Heavy Body Occlusion**: In dense crowds (e.g., `frame8.jpg` and `frame10.jpg`), individuals standing directly behind another person with only partial upper heads visible recorded lower confidence scores (~55-63%).
-2. **Resolution & Distance**: Small background figures at extreme distances required adjusting the UI Confidence Threshold slider to 0.25 for full recall.
-
-### Recommended Future Enhancements
-- **DeepSORT Tracking Integration**: Add multi-object tracking IDs across consecutive video stream frames to track person movement vectors.
-- **Hardware NPU Acceleration**: Add TensorRT / ONNX Runtime execution provider support for ultra-high FPS 4K stream processing.
-
----
-
-## 🔌 API Endpoints Summary
-
-| Method | Endpoint Path | Description |
+| Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| `POST` | `/api/v1/detect` (or `/detect`) | Upload image (multipart/form-data or base64). Returns person count, bounding boxes, avg confidence, inference time, and base64 annotated image. |
-| `GET` | `/api/v1/history` (or `/history`) | Retrieves stored detection log records with query filters (`limit`, `offset`, `search`, `min_count`, `max_count`, `min_confidence`). |
-| `POST` | `/api/v1/reset` (or `/reset`) | Clears all stored detection records from the SQLite database. |
-| `GET` | `/api/v1/export` | Generates and downloads a CSV export of all historical detection logs. |
-| `WS` | `/api/v1/ws/stream` | Real-time WebSocket endpoint streaming webcam frames and receiving bounding box detection JSON payloads. |
-| `WS` | `/api/v1/ws/ipstream` | Real-time WebSocket endpoint capturing IP Camera / RTSP / NDI video stream URLs server-side via OpenCV. |
-| `GET` | `/health` | Returns backend server health, model status, and database connection state. |
+| `POST` | `/api/v1/detect` | Upload image for person detection. Returns count, bounding boxes, and annotated image. |
+| `GET` | `/api/v1/history` | Retrieves stored detection log records with search/confidence filters. |
+| `POST` | `/api/v1/reset` | Clears stored detection history records from SQLite database. |
+| `GET` | `/api/v1/export` | Downloads CSV export of historical detection telemetry (`visionpulse_history.csv`). |
+| `WS` | `/api/v1/ws/stream` | Real-time WebSocket endpoint streaming webcam frames and bounding box JSON payloads. |
+| `GET` | `/health` | Server health check and database connection status. |
 
 ---
 
-## ⚖️ License & Credits
+## 📄 License
 
-Built with ❤️ for real-time computer vision monitoring and visual analytics.  
-*Powered by Ultralytics YOLOv8, FastAPI, OpenCV, React, TypeScript, Vite, and Windows 98 Design System.*
+Distributed under the MIT License. See [LICENSE](LICENSE.md) for details.
